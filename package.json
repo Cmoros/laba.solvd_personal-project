@@ -1,26 +1,24 @@
 {
-  "name": "laba.solvd__personal-project",
+  "name": "laba.solvd_personal-project",
   "version": "1.0.0",
   "description": "",
-  "main": "./src/myPromiseDotAll.ts",
+  "main": "index.js",
   "scripts": {
     "test": "jest",
-    "start": "ts-node src/index.ts",
-    "docker:build": "docker build --tag cmoros__personal-project .",
-    "docker:start": "docker start cmoros__personal-project",
-    "docker:run": "docker run -p 127.0.0.1:49160:3000 -d cmoros__personal-project --name cmoros__persona-project",
-    "docker:logs": "docker logs <dockerid>",
-    "curl": "curl -i 127.0.0.1:49160",
-    "test:promise": "jest myPromiseDotAll",
+    "build": "tsc",
+    "start": "ts-node src/app.ts",
+    "docker:build": "docker build -t cmoros/cmoros_personal-project .",
+    "docker:start": "docker start cmoros_personal-project",
+    "docker:run": "docker run -p 3000:3000 -d cmoros/cmoros_personal-project",
+    "docker:run2": "docker run -p 3000:3000 -d cmoros_personal-project --name cmoros_personal-project",
+    "docker:logs": "echo \"docker logs <dockerid>\"",
+    "curl": "curl -i localhost:3000",
     "compile": "tsc"
   },
   "keywords": [],
   "author": "César Moros <rdcesar442@gmail.com>",
   "license": "ISC",
   "devDependencies": {
-    "@types/jest": "^29.4.0",
-    "jest": "^29.4.1",
-    "ts-jest": "^29.0.5",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.4"
   }
