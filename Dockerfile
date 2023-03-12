@@ -8,8 +8,7 @@ RUN npm install
 
 COPY . .
 
-# RUN npm run build
-
-EXPOSE 3000
+# Uncomment line below to let ser available outside
+# EXPOSE 3000
 
 CMD ["npm", "start"]
