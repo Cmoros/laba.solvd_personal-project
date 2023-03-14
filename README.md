@@ -25,7 +25,6 @@
       - [Record deleted](#record-deleted)
       - [Record not found](#record-not-found)
       - [Record with invalid data](#record-with-invalid-data)
-    - [Overview](#overview)
     - [Employees](#employees)
       - [`GET /employees`](#get-employees)
       - [`GET /employees/:id`](#get-employeesid)
@@ -201,35 +200,6 @@ This API does not require authentication.
     "error": "..." // Reason the request failed
   }
   ```
-
-### Overview
-
-- Employees
-
-  - [`GET /employees`](#get-employees)
-  - [`GET /employees/:id`](#get-employeesid)
-  - [`POST /employees`](#post-employees)
-  - [`PUT /employees/:id`](#put-employeesid)
-  - [`PATCH /employees/:id`](#patch-employeesid)
-  - [`DELETE /employees/:id`](#delete-employeesid)
-
-- Trains
-
-  - [`GET /trains`](#get-trains)
-  - [`GET /trains/:id`](#get-trainsid)
-  - [`POST /trains`](#post-trains)
-  - [`PUT /trains/:id`](#put-trainsid)
-  - [`PATCH /trains/:id`](#patch-trainsid)
-  - [`DELETE /trains/:id`](#delete-trainsid)
-
-- Schedules
-
-  - [`GET /schedules`](#get-schedules)
-  - [`GET /schedules/:id`](#get-schedulesid)
-  - [`POST /schedules`](#post-schedules)
-  - [`PUT /schedules/:id`](#put-schedulesid)
-  - [`PATCH /schedules/:id`](#patch-schedulesid)
-  - [`DELETE /schedules/:id`](#delete-schedulesid)
 
 ---
 
