@@ -28,71 +28,27 @@
     - [Overview](#overview)
     - [Employees](#employees)
       - [`GET /employees`](#get-employees)
-        - [Query Parameters](#query-parameters)
-        - [Response](#response)
       - [`GET /employees/:id`](#get-employeesid)
-        - [Query Parameters](#query-parameters-1)
-        - [Response](#response-1)
       - [`POST /employees`](#post-employees)
-        - [Request Body](#request-body)
-        - [Response](#response-2)
       - [`PUT /employees/:id`](#put-employeesid)
-        - [Query Parameters](#query-parameters-2)
-        - [Request Body](#request-body-1)
-        - [Response](#response-3)
       - [`PATCH /employees/:id`](#patch-employeesid)
-        - [Query Parameters](#query-parameters-3)
-        - [Request Body](#request-body-2)
-        - [Response](#response-4)
       - [`DELETE /employees/:id`](#delete-employeesid)
-        - [Query Parameters](#query-parameters-4)
-        - [Response](#response-5)
     - [Trains](#trains)
       - [`GET /trains`](#get-trains)
-        - [Query Parameters](#query-parameters-5)
-        - [Response](#response-6)
       - [`GET /trains/:id`](#get-trainsid)
-        - [Query Parameters](#query-parameters-6)
-        - [Response](#response-7)
       - [`POST /trains`](#post-trains)
-        - [Request Body](#request-body-3)
-        - [Response](#response-8)
       - [`PUT /trains/:id`](#put-trainsid)
-        - [Query Parameters](#query-parameters-7)
-        - [Request Body](#request-body-4)
-        - [Response](#response-9)
       - [`PATCH /trains/:id`](#patch-trainsid)
-        - [Query Parameters](#query-parameters-8)
-        - [Request Body](#request-body-5)
-        - [Response](#response-10)
       - [`DELETE /trains/:id`](#delete-trainsid)
-        - [Query Parameters](#query-parameters-9)
-        - [Response](#response-11)
     - [Schedules](#schedules)
       - [`GET /schedules`](#get-schedules)
-        - [Query Parameters](#query-parameters-10)
-        - [Response](#response-12)
       - [`GET /schedules/:id`](#get-schedulesid)
-        - [Query Parameters](#query-parameters-11)
-        - [Response](#response-13)
       - [`POST /schedules`](#post-schedules)
-        - [Request Body](#request-body-6)
-        - [Response](#response-14)
       - [`PUT /schedules/:id`](#put-schedulesid)
-        - [Query Parameters](#query-parameters-12)
-        - [Request Body](#request-body-7)
-        - [Response](#response-15)
       - [`PATCH /schedules/:id`](#patch-schedulesid)
-        - [Query Parameters](#query-parameters-13)
-        - [Request Body](#request-body-8)
-        - [Response](#response-16)
       - [`DELETE /schedules/:id`](#delete-schedulesid)
-        - [Query Parameters](#query-parameters-14)
-        - [Response](#response-17)
 
 ## About
-
----
 
 ## Assignment
 
@@ -101,8 +57,6 @@ Create a Docker container running a simple Node.js server with a single route th
 The server should only be accessible from within the container and not from outside.
 
 ## Getting Started
-
----
 
 ### Prerequisites
 
@@ -155,88 +109,98 @@ This API does not require authentication.
 
 #### Record found/updated
 
-Verbs applied: `GET`, `PUT`, `PATCH`
+- Verbs applied: `GET`, `PUT`, `PATCH`
 
-Status Code: 200
+- Status Code: 200
 
-```
-{
-  "success": true,
-  "data": {
-    // ... Record info
+- Response
+
+  ```
+  {
+    "success": true,
+    "data": {
+      // ... Record info
+    }
   }
-}
-```
+  ```
 
 #### Requesting many records
 
-Verbs applied: `GET`
+- Verbs applied: `GET`
 
-Status Code: 200 - OK
+- Status Code: 200 - OK
 
-```
-{
-  "success": false,
-  "data": [
-    {
-      // Record 1
-    },
-    {
-      // Record 2
-    }
-    // ...
-  ]
-}
-```
+- Response
+
+  ```
+  {
+    "success": false,
+    "data": [
+      {
+        // Record 1
+      },
+      {
+        // Record 2
+      }
+      // ...
+    ]
+  }
+  ```
 
 #### Record created
 
-Verbs applied: `POST`
+- Verbs applied: `POST`
 
-Status Code: 200
+- Status Code: 200
 
-```
-{
-  "success": true,
-  "data": {
-    // ... New Record
+- Response
+
+  ```
+  {
+    "success": true,
+    "data": {
+      // ... New Record
+    }
   }
-}
-```
+  ```
 
 #### Record deleted
 
-Verbs applied: `DELETE`
+- Verbs applied: `DELETE`
 
-Status Code: 204
+- Status Code: 204
 
-Response with no body
+- Response with no body
 
 #### Record not found
 
-Verbs applied: `GET`, `PUT`, `PATCH`, `DELETE`
+- Verbs applied: `GET`, `PUT`, `PATCH`, `DELETE`
 
-Status Code: 404 - Not Found
+- Status Code: 404 - Not Found
 
-```
-{
-  "success": false,
-  "error": "..." // What record with what id was not found
-}
-```
+- Response
+
+  ```
+  {
+    "success": false,
+    "error": "..." // What record with what id was not found
+  }
+  ```
 
 #### Record with invalid data
 
-Verbs applied: `POST`, `PUT`, `PATCH`
+- Verbs applied: `POST`, `PUT`, `PATCH`
 
-Status Code: 400 - Bad Request
+- Status Code: 400 - Bad Request
 
-```
-{
-  "success": false,
-  "error": "..." // Reason the request failed
-}
-```
+- Response
+
+  ```
+  {
+    "success": false,
+    "error": "..." // Reason the request failed
+  }
+  ```
 
 ### Overview
 
@@ -275,167 +239,166 @@ Status Code: 400 - Bad Request
 
 Retrieves a list of all employees.
 
-##### Query Parameters
+- Query Parameters
 
-None
+  None
 
-##### Response
+- Response
 
-```
-{
-  "success": true,
-  "data": [
-    {
-      "id": 1,
-      "name": "John Doe",
-      "position": "Train Conductor"
-    },
-    {
-      "id": 2,
-      "name": "Jane Smith",
-      "position": "Station Agent"
-    }
-  ]
-}
-
-```
+  ```
+  {
+    "success": true,
+    "data": [
+      {
+        "id": 1,
+        "name": "John Doe",
+        "position": "Train Conductor"
+      },
+      {
+        "id": 2,
+        "name": "Jane Smith",
+        "position": "Station Agent"
+      }
+    ]
+  }
+  ```
 
 #### `GET /employees/:id`
 
 Retrieves a specific employee by ID.
 
-##### Query Parameters
+- Query Parameters
 
-| Parameter | Type   | Required | Description      |
-| --------- | ------ | -------- | ---------------- |
-| `id`      | number | Yes      | The employee ID. |
+  | Parameter | Type   | Required | Description      |
+  | --------- | ------ | -------- | ---------------- |
+  | `id`      | number | Yes      | The employee ID. |
 
-##### Response
+- Response
 
-```
-{
-  "success": true,
-  "data": {
-    "id": 1,
-    "name": "John Doe",
-    "position": "Train Conductor"
+  ```
+  {
+    "success": true,
+    "data": {
+      "id": 1,
+      "name": "John Doe",
+      "position": "Train Conductor"
+    }
   }
-}
-```
+  ```
 
 #### `POST /employees`
 
 Creates a new employee.
 
-##### Request Body
+- Request Body
 
-```
-{
-  "name": "Bobby Jhonson",
-  "position": "Train Operator",
-}
-```
-
-##### Response
-
-```
-{
-  "success": true,
-  "data": {
-    "id": 3,
+  ```
+  {
     "name": "Bobby Jhonson",
-    "position": "Train Operator"
+    "position": "Train Operator",
   }
-}
-```
+  ```
+
+- Response
+
+  ```
+  {
+    "success": true,
+    "data": {
+      "id": 3,
+      "name": "Bobby Jhonson",
+      "position": "Train Operator"
+    }
+  }
+  ```
 
 #### `PUT /employees/:id`
 
 Replace a specific employee by ID.
 
-##### Query Parameters
+- Query Parameters
 
-| Parameter | Type   | Required | Description      |
-| --------- | ------ | -------- | ---------------- |
-| `id`      | number | Yes      | The employee ID. |
+  | Parameter | Type   | Required | Description      |
+  | --------- | ------ | -------- | ---------------- |
+  | `id`      | number | Yes      | The employee ID. |
 
-##### Request Body
+- Request Body
 
-```
-{
-  "name": "Bob Johnson",
-  "position": "Cleaning Staff",
-}
-```
-
-##### Response
-
-```
-{
-  "success": true,
-  "data": {
-    "id": 3,
+  ```
+  {
     "name": "Bob Johnson",
-    "position": "Cleaning Staff"
+    "position": "Cleaning Staff",
   }
-}
-```
+  ```
+
+- Response
+
+  ```
+  {
+    "success": true,
+    "data": {
+      "id": 3,
+      "name": "Bob Johnson",
+      "position": "Cleaning Staff"
+    }
+  }
+  ```
 
 #### `PATCH /employees/:id`
 
 Update one or more fields of an employee by ID.
 
-##### Query Parameters
+- Query Parameters
 
-| Parameter | Type   | Required | Description      |
-| --------- | ------ | -------- | ---------------- |
-| `id`      | number | Yes      | The employee ID. |
+  | Parameter | Type   | Required | Description      |
+  | --------- | ------ | -------- | ---------------- |
+  | `id`      | number | Yes      | The employee ID. |
 
-##### Request Body
+- Request Body
 
-```
-{
-  "position": "Train Conductor",
-}
-```
-
-##### Response
-
-```
-{
-  "success": true,
-  "data": {
-    "id": 3,
-    "name": "Bob Johnson",
-    "position": "Train Conductor"
+  ```
+  {
+    "position": "Train Conductor",
   }
-}
-```
+  ```
+
+- Response
+
+  ```
+  {
+    "success": true,
+    "data": {
+      "id": 3,
+      "name": "Bob Johnson",
+      "position": "Train Conductor"
+    }
+  }
+  ```
 
 #### `DELETE /employees/:id`
 
 Deletes an employee by ID.
 
-##### Query Parameters
+- Query Parameters
 
-| Parameter | Type   | Required | Description      |
-| --------- | ------ | -------- | ---------------- |
-| `id`      | number | Yes      | The employee ID. |
+  | Parameter | Type   | Required | Description      |
+  | --------- | ------ | -------- | ---------------- |
+  | `id`      | number | Yes      | The employee ID. |
 
-##### Response
+- Response
 
-```
-{
-  "success": true,
-  "data": {
-    "id": 3,
-    "name": "Bob Johnson",
-    "position": "Train Conductor"
+  ```
+  {
+    "success": true,
+    "data": {
+      "id": 3,
+      "name": "Bob Johnson",
+      "position": "Train Conductor"
+    }
   }
-}
-```
+  ```
 
-[⬆ Go To Overview ⬆](#overview) ----|---- [⬆ Go To Employees ⬆](#employees)
+[⬆ Go To Table of contents ⬆](#table-of-contents) ----|---- [⬆ Go To Employees ⬆](#employees)
 
 ---
 
@@ -445,17 +408,54 @@ Deletes an employee by ID.
 
 Retrieves a list of all trains.
 
-##### Query Parameters
+- Query Parameters
 
-None
+  None
 
-##### Response
+- Response
 
-```
-{
-   "success": true,
-   "data": [
-    {
+  ```
+  {
+    "success": true,
+    "data": [
+      {
+        "id": 1,
+        "model": "Commuter Express",
+        "totalCars": 6,
+        "capacityPerCar": 50,
+        "status": "active",
+        "scheduleId": 1,
+        "conductorId": 1
+      },
+      {
+        "id": 2,
+        "model": "Commuter Express",
+        "totalCars": 6,
+        "capacityPerCar": 50,
+        "status": "delayed",
+        "scheduleId": 2,
+        "conductorId": 4
+      }
+    ]
+  }
+  ```
+
+#### `GET /trains/:id`
+
+Retrieves a specific train by ID.
+
+- Query Parameters
+
+  | Parameter | Type   | Required | Description   |
+  | --------- | ------ | -------- | ------------- |
+  | `id`      | number | Yes      | The train ID. |
+
+- Response
+
+  ```
+  {
+    "success": true,
+    "data": {
       "id": 1,
       "model": "Commuter Express",
       "totalCars": 6,
@@ -463,72 +463,18 @@ None
       "status": "active",
       "scheduleId": 1,
       "conductorId": 1
-    },
-    {
-      "id": 2,
-      "model": "Commuter Express",
-      "totalCars": 6,
-      "capacityPerCar": 50,
-      "status": "delayed",
-      "scheduleId": 2,
-      "conductorId": 4
     }
-  ]
-}
-
-```
-
-#### `GET /trains/:id`
-
-Retrieves a specific train by ID.
-
-##### Query Parameters
-
-| Parameter | Type   | Required | Description   |
-| --------- | ------ | -------- | ------------- |
-| `id`      | number | Yes      | The train ID. |
-
-##### Response
-
-```
-{
-  "success": true,
-  "data": {
-    "id": 1,
-    "model": "Commuter Express",
-    "totalCars": 6,
-    "capacityPerCar": 50,
-    "status": "active",
-    "scheduleId": 1,
-    "conductorId": 1
   }
-}
-```
+  ```
 
 #### `POST /trains`
 
 Creates a new train.
 
-##### Request Body
+- Request Body
 
-```
-{
-  "model": "Commuter Express",
-  "totalCars": 6,
-  "capacityPerCar": 50,
-  "status": "active",
-  "scheduleId": 3,
-  "conductorId": 3
-}
-```
-
-##### Response
-
-```
-{
-  "success": true,
-  "data": {
-    "id": 3,
+  ```
+  {
     "model": "Commuter Express",
     "totalCars": 6,
     "capacityPerCar": 50,
@@ -536,39 +482,39 @@ Creates a new train.
     "scheduleId": 3,
     "conductorId": 3
   }
-}
-```
+  ```
+
+- Response
+
+  ```
+  {
+    "success": true,
+    "data": {
+      "id": 3,
+      "model": "Commuter Express",
+      "totalCars": 6,
+      "capacityPerCar": 50,
+      "status": "active",
+      "scheduleId": 3,
+      "conductorId": 3
+    }
+  }
+  ```
 
 #### `PUT /trains/:id`
 
 Replace a specific train by ID.
 
-##### Query Parameters
+- Query Parameters
 
-| Parameter | Type   | Required | Description   |
-| --------- | ------ | -------- | ------------- |
-| `id`      | number | Yes      | The train ID. |
+  | Parameter | Type   | Required | Description   |
+  | --------- | ------ | -------- | ------------- |
+  | `id`      | number | Yes      | The train ID. |
 
-##### Request Body
+- Request Body
 
-```
-{
-  "model": "Commuter Express",
-  "totalCars": 6,
-  "capacityPerCar": 60,
-  "status": "active",
-  "scheduleId": 4,
-  "conductorId": 4
-}
-```
-
-##### Response
-
-```
-{
-  "success": true,
-  "data": {
-    "id": 1,
+  ```
+  {
     "model": "Commuter Express",
     "totalCars": 6,
     "capacityPerCar": 60,
@@ -576,72 +522,88 @@ Replace a specific train by ID.
     "scheduleId": 4,
     "conductorId": 4
   }
-}
-```
+  ```
+
+- Response
+
+  ```
+  {
+    "success": true,
+    "data": {
+      "id": 1,
+      "model": "Commuter Express",
+      "totalCars": 6,
+      "capacityPerCar": 60,
+      "status": "active",
+      "scheduleId": 4,
+      "conductorId": 4
+    }
+  }
+  ```
 
 #### `PATCH /trains/:id`
 
 Update one or more fields of an train by ID.
 
-##### Query Parameters
+- Query Parameters
 
-| Parameter | Type   | Required | Description   |
-| --------- | ------ | -------- | ------------- |
-| `id`      | number | Yes      | The train ID. |
+  | Parameter | Type   | Required | Description   |
+  | --------- | ------ | -------- | ------------- |
+  | `id`      | number | Yes      | The train ID. |
 
-##### Request Body
+- Request Body
 
-```
-{
-  "status": "out of service"
-}
-```
-
-##### Response
-
-```
-{
-  "success": true,
-  "data": {
-    "id": 1,
-    "model": "Commuter Express",
-    "totalCars": 6,
-    "capacityPerCar": 50,
-    "status": "out of service",
-    "scheduleId": 1,
-    "conductorId": 1
+  ```
+  {
+    "status": "out of service"
   }
-}
-```
+  ```
+
+- Response
+
+  ```
+  {
+    "success": true,
+    "data": {
+      "id": 1,
+      "model": "Commuter Express",
+      "totalCars": 6,
+      "capacityPerCar": 50,
+      "status": "out of service",
+      "scheduleId": 1,
+      "conductorId": 1
+    }
+  }
+  ```
 
 #### `DELETE /trains/:id`
 
 Deletes an trains by ID.
 
-##### Query Parameters
+- Query Parameters
 
-| Parameter | Type   | Required | Description   |
-| --------- | ------ | -------- | ------------- |
-| `id`      | number | Yes      | The train ID. |
+  | Parameter | Type   | Required | Description   |
+  | --------- | ------ | -------- | ------------- |
+  | `id`      | number | Yes      | The train ID. |
 
-##### Response
+- Response
 
-```
-{
-  "success": true,
-  "data": {
-    "id": 1,
-    "model": "Commuter Express",
-    "totalCars": 6,
-    "capacityPerCar": 50,
-    "status": "active",
-    "scheduleId": 1,
-    "conductorId": 1
+  ```
+  {
+    "success": true,
+    "data": {
+      "id": 1,
+      "model": "Commuter Express",
+      "totalCars": 6,
+      "capacityPerCar": 50,
+      "status": "active",
+      "scheduleId": 1,
+      "conductorId": 1
+    }
   }
-}
-```
+  ```
 
-[⬆ Go To Overview ⬆](#overview) ----|---- [⬆ Go To Train ⬆](#trains)
+[⬆ Go To Table of contents ⬆](#table-of-contents) ----|---- [⬆ Go To Train ⬆](#trains)
 
 ---
 
@@ -651,192 +613,189 @@ Deletes an trains by ID.
 
 Returns the schedule of trains for the day.
 
-##### Query Parameters
+- Query Parameters
 
-None
+  None
 
-##### Response
+- Response
 
-```
-{
-  "success": true,
-  "data": [
-    {
-      "id": 1,
-      "departureStation": "North Station",
-      "arrivalStation": "South Station",
-      "departureTime": "07:00 AM",
-      "arrivalTime": "07:30 AM"
-    },
-    {
-      "id": 2,
-      "departureStation": "East Station",
-      "arrivalStation": "West Station",
-      "departureTime": "08:00 AM",
-      "arrivalTime": "08:30 AM"
-    },
-    {
-      "id": 3,
-      "departureStation": "Central Station",
-      "arrivalStation": "Main Station",
-      "departureTime": "09:00 AM",
-      "arrivalTime": "09:30 AM"
-    }
-  ]
-}
-
-```
+  ```
+  {
+    "success": true,
+    "data": [
+      {
+        "id": 1,
+        "departureStation": "North Station",
+        "arrivalStation": "South Station",
+        "departureTime": "07:00 AM",
+        "arrivalTime": "07:30 AM"
+      },
+      {
+        "id": 2,
+        "departureStation": "East Station",
+        "arrivalStation": "West Station",
+        "departureTime": "08:00 AM",
+        "arrivalTime": "08:30 AM"
+      },
+      {
+        "id": 3,
+        "departureStation": "Central Station",
+        "arrivalStation": "Main Station",
+        "departureTime": "09:00 AM",
+        "arrivalTime": "09:30 AM"
+      }
+    ]
+  }
+  ```
 
 #### `GET /schedules/:id`
 
 Retrieves a specific schedule by ID.
 
-##### Query Parameters
+- Query Parameters
 
-| Parameter | Type   | Required | Description      |
-| --------- | ------ | -------- | ---------------- |
-| `id`      | number | Yes      | The schedule ID. |
+  | Parameter | Type   | Required | Description      |
+  | --------- | ------ | -------- | ---------------- |
+  | `id`      | number | Yes      | The schedule ID. |
 
-##### Response
+- Response
 
-```
-{
-  "success": true,
-  "data": {
-    "id": 1,
-    "departureStation": "North Station",
-    "arrivalStation": "South Station",
-    "departureTime": "07:00 AM",
-    "arrivalTime": "07:30 AM"
+  ```
+  {
+    "success": true,
+    "data": {
+      "id": 1,
+      "departureStation": "North Station",
+      "arrivalStation": "South Station",
+      "departureTime": "07:00 AM",
+      "arrivalTime": "07:30 AM"
+    }
   }
-}
-```
+  ```
 
 #### `POST /schedules`
 
 Creates a new schedule.
 
-##### Request Body
+- Request Body
 
-```
-{
-  "departureStation": "City Station",
-  "arrivalStation": "Metro Station",
-  "departureTime": "09:30 AM",
-  "arrivalTime": "10:00 AM"
-}
-```
-
-##### Response
-
-```
-{
-  "success": true,
-  "data": {
-    "id": 4,
+  ```
+  {
     "departureStation": "City Station",
     "arrivalStation": "Metro Station",
     "departureTime": "09:30 AM",
     "arrivalTime": "10:00 AM"
   }
-}
-```
+  ```
+
+- Response
+
+  ```
+  {
+    "success": true,
+    "data": {
+      "id": 4,
+      "departureStation": "City Station",
+      "arrivalStation": "Metro Station",
+      "departureTime": "09:30 AM",
+      "arrivalTime": "10:00 AM"
+    }
+  }
+  ```
 
 #### `PUT /schedules/:id`
 
 Replace a specific schedule by ID.
 
-##### Query Parameters
+- Query Parameters
 
-| Parameter | Type   | Required | Description      |
-| --------- | ------ | -------- | ---------------- |
-| `id`      | number | Yes      | The schedule ID. |
+  | Parameter | Type   | Required | Description      |
+  | --------- | ------ | -------- | ---------------- |
+  | `id`      | number | Yes      | The schedule ID. |
 
-##### Request Body
+- Request Body
 
-```
-{
-  "departureStation": "City Station",
-  "arrivalStation": "Metro Station",
-  "departureTime": "09:30 AM",
-  "arrivalTime": "10:00 AM"
-}
-```
-
-##### Response
-
-```
-{
-  "success": true,
-  "data": {
-    "id": 1,
+  ```
+  {
     "departureStation": "City Station",
     "arrivalStation": "Metro Station",
     "departureTime": "09:30 AM",
     "arrivalTime": "10:00 AM"
   }
-}
-```
+  ```
+
+- Response
+
+  ```
+  {
+    "success": true,
+    "data": {
+      "id": 1,
+      "departureStation": "City Station",
+      "arrivalStation": "Metro Station",
+      "departureTime": "09:30 AM",
+      "arrivalTime": "10:00 AM"
+    }
+  }
+  ```
 
 #### `PATCH /schedules/:id`
 
 Update one or more fields of a schedule record by ID.
 
-##### Query Parameters
+- Query Parameters
 
-| Parameter | Type   | Required | Description      |
-| --------- | ------ | -------- | ---------------- |
-| `id`      | number | Yes      | The schedule ID. |
+  | Parameter | Type   | Required | Description      |
+  | --------- | ------ | -------- | ---------------- |
+  | `id`      | number | Yes      | The schedule ID. |
 
-##### Request Body
+- Request Body
 
-```
-{
-  "departureStation": "Terminal Station",
-  "arrivalStation": "Union Station",
-}
-```
-
-##### Response
-
-```
-{
-  "success": true,
-  "data": {
-    "id": 1,
+  ```
+  {
     "departureStation": "Terminal Station",
     "arrivalStation": "Union Station",
-    "departureTime": "07:00 AM",
-    "arrivalTime": "07:30 AM"
   }
-}
-```
+  ```
+
+- Response
+
+  ```
+  {
+    "success": true,
+    "data": {
+      "id": 1,
+      "departureStation": "Terminal Station",
+      "arrivalStation": "Union Station",
+      "departureTime": "07:00 AM",
+      "arrivalTime": "07:30 AM"
+    }
+  }
+  ```
 
 #### `DELETE /schedules/:id`
 
 Deletes a schedule record by ID.
 
-##### Query Parameters
+- Query Parameters
 
-| Parameter | Type   | Required | Description      |
-| --------- | ------ | -------- | ---------------- |
-| `id`      | number | Yes      | The schedule ID. |
+  | Parameter | Type   | Required | Description      |
+  | --------- | ------ | -------- | ---------------- |
+  | `id`      | number | Yes      | The schedule ID. |
 
-##### Response
+- Response
 
-```
-{
-  "success": true,
-  "data": {
-    "id": 1,
-    "departureStation": "North Station",
-    "arrivalStation": "South Station",
-    "departureTime": "07:00 AM",
-    "arrivalTime": "07:30 AM"
+  ```
+  {
+    "success": true,
+    "data": {
+      "id": 1,
+      "departureStation": "North Station",
+      "arrivalStation": "South Station",
+      "departureTime": "07:00 AM",
+      "arrivalTime": "07:30 AM"
+    }
   }
-}
-```
+  ```
 
-[⬆ Go To Overview ⬆](#overview) ----|---- [⬆ Go To Schedule ⬆](#schedules)
-
-[⬆ Go To Top ⬆](#table-of-contents)
+[⬆ Go To Table of contents ⬆](#table-of-contents) ----|---- [⬆ Go To Schedule ⬆](#schedules)
