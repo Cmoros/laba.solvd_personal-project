@@ -2,6 +2,94 @@
 
 ### Laba.Solvd Nodejs Course
 
+## Table of contents
+
+- [Laba Personal Project](#laba-personal-project)
+  - [Laba.Solvd Nodejs Course](#labasolvd-nodejs-course)
+  - [Table of contents](#table-of-contents)
+  - [About](#about)
+  - [Assignment](#assignment)
+  - [Getting Started](#getting-started)
+    - [Prerequisites](#prerequisites)
+  - [Usage](#usage)
+    - [Using Docker](#using-docker)
+    - [Using `npm start`](#using-npm-start)
+- [Metro API Documentation](#metro-api-documentation)
+  - [Base URL](#base-url)
+  - [Authentication](#authentication)
+  - [Endpoints](#endpoints)
+    - [General Responses](#general-responses)
+      - [Record found/updated](#record-foundupdated)
+      - [Requesting many records](#requesting-many-records)
+      - [Record created](#record-created)
+      - [Record deleted](#record-deleted)
+      - [Record not found](#record-not-found)
+      - [Record with invalid data](#record-with-invalid-data)
+    - [Overview](#overview)
+    - [Employees](#employees)
+      - [`GET /employees`](#get-employees)
+        - [Query Parameters](#query-parameters)
+        - [Response](#response)
+      - [`GET /employees/:id`](#get-employeesid)
+        - [Query Parameters](#query-parameters-1)
+        - [Response](#response-1)
+      - [`POST /employees`](#post-employees)
+        - [Request Body](#request-body)
+        - [Response](#response-2)
+      - [`PUT /employees/:id`](#put-employeesid)
+        - [Query Parameters](#query-parameters-2)
+        - [Request Body](#request-body-1)
+        - [Response](#response-3)
+      - [`PATCH /employees/:id`](#patch-employeesid)
+        - [Query Parameters](#query-parameters-3)
+        - [Request Body](#request-body-2)
+        - [Response](#response-4)
+      - [`DELETE /employees/:id`](#delete-employeesid)
+        - [Query Parameters](#query-parameters-4)
+        - [Response](#response-5)
+    - [Trains](#trains)
+      - [`GET /trains`](#get-trains)
+        - [Query Parameters](#query-parameters-5)
+        - [Response](#response-6)
+      - [`GET /trains/:id`](#get-trainsid)
+        - [Query Parameters](#query-parameters-6)
+        - [Response](#response-7)
+      - [`POST /trains`](#post-trains)
+        - [Request Body](#request-body-3)
+        - [Response](#response-8)
+      - [`PUT /trains/:id`](#put-trainsid)
+        - [Query Parameters](#query-parameters-7)
+        - [Request Body](#request-body-4)
+        - [Response](#response-9)
+      - [`PATCH /trains/:id`](#patch-trainsid)
+        - [Query Parameters](#query-parameters-8)
+        - [Request Body](#request-body-5)
+        - [Response](#response-10)
+      - [`DELETE /trains/:id`](#delete-trainsid)
+        - [Query Parameters](#query-parameters-9)
+        - [Response](#response-11)
+    - [Schedules](#schedules)
+      - [`GET /schedules`](#get-schedules)
+        - [Query Parameters](#query-parameters-10)
+        - [Response](#response-12)
+      - [`GET /schedules/:id`](#get-schedulesid)
+        - [Query Parameters](#query-parameters-11)
+        - [Response](#response-13)
+      - [`POST /schedules`](#post-schedules)
+        - [Request Body](#request-body-6)
+        - [Response](#response-14)
+      - [`PUT /schedules/:id`](#put-schedulesid)
+        - [Query Parameters](#query-parameters-12)
+        - [Request Body](#request-body-7)
+        - [Response](#response-15)
+      - [`PATCH /schedules/:id`](#patch-schedulesid)
+        - [Query Parameters](#query-parameters-13)
+        - [Request Body](#request-body-8)
+        - [Response](#response-16)
+      - [`DELETE /schedules/:id`](#delete-schedulesid)
+        - [Query Parameters](#query-parameters-14)
+        - [Response](#response-17)
+
 ## About
 
 ---
@@ -63,6 +151,93 @@ This API does not require authentication.
 
 ## Endpoints
 
+### General Responses
+
+#### Record found/updated
+
+Verbs applied: `GET`, `PUT`, `PATCH`
+
+Status Code: 200
+
+```
+{
+  "success": true,
+  "data": {
+    // ... Record info
+  }
+}
+```
+
+#### Requesting many records
+
+Verbs applied: `GET`
+
+Status Code: 200 - OK
+
+```
+{
+  "success": false,
+  "data": [
+    {
+      // Record 1
+    },
+    {
+      // Record 2
+    }
+    // ...
+  ]
+}
+```
+
+#### Record created
+
+Verbs applied: `POST`
+
+Status Code: 200
+
+```
+{
+  "success": true,
+  "data": {
+    // ... New Record
+  }
+}
+```
+
+#### Record deleted
+
+Verbs applied: `DELETE`
+
+Status Code: 204
+
+Response with no body
+
+#### Record not found
+
+Verbs applied: `GET`, `PUT`, `PATCH`, `DELETE`
+
+Status Code: 404 - Not Found
+
+```
+{
+  "success": false,
+  "error": "..." // What record with what id was not found
+}
+```
+
+#### Record with invalid data
+
+Verbs applied: `POST`, `PUT`, `PATCH`
+
+Status Code: 400 - Bad Request
+
+```
+{
+  "success": false,
+  "error": "..." // Reason the request failed
+}
+```
+
 ### Overview
 
 - Employees
@@ -91,6 +266,8 @@ This API does not require authentication.
   - [`PUT /schedules/:id`](#put-schedulesid)
   - [`PATCH /schedules/:id`](#patch-schedulesid)
   - [`DELETE /schedules/:id`](#delete-schedulesid)
+
+---
 
 ### Employees
 
@@ -258,7 +435,7 @@ Deletes an employee by ID.
 }
 ```
 
-[⬆ Go Top ⬆](#overview) ----|---- [⬆ Go To Employees ⬆](#employees)
+[⬆ Go To Overview ⬆](#overview) ----|---- [⬆ Go To Employees ⬆](#employees)
 
 ---
 
@@ -301,7 +478,7 @@ None
 
 ```
 
-`GET /trains/:id`
+#### `GET /trains/:id`
 
 Retrieves a specific train by ID.
 
@@ -464,7 +641,9 @@ Deletes an trains by ID.
 }
 ```
 
-[⬆ Go Top ⬆](#overview) ----|---- [⬆ Go To Train ⬆](#trains)
+[⬆ Go To Overview ⬆](#overview) ----|---- [⬆ Go To Train ⬆](#trains)
+
+---
 
 ### Schedules
 
@@ -508,7 +687,7 @@ None
 
 ```
 
-`GET /schedules/:id`
+#### `GET /schedules/:id`
 
 Retrieves a specific schedule by ID.
 
@@ -658,4 +837,6 @@ Deletes a schedule record by ID.
 }
 ```
 
-[⬆ Go Top ⬆](#overview) ----|---- [⬆ Go To Schedule ⬆](#schedules)
+[⬆ Go To Overview ⬆](#overview) ----|---- [⬆ Go To Schedule ⬆](#schedules)
+
+[⬆ Go To Top ⬆](#table-of-contents)
