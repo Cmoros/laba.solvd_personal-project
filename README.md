@@ -207,11 +207,14 @@ This API does not require authentication.
 
 #### `GET /employees`
 
-Retrieves a list of all employees.
+Retrieves a list of all employees. Query params can be added for searching employees that match the given params.
 
 - Query Parameters
 
-  None
+  | Parameter  | Type   | Required | Description                 |
+  | ---------- | ------ | -------- | --------------------------- |
+  | `name`     | string | No       | Filter employee by name     |
+  | `position` | string | No       | Filter employee by position |
 
 - Response
 
@@ -237,7 +240,7 @@ Retrieves a list of all employees.
 
 Retrieves a specific employee by ID.
 
-- Query Parameters
+- Route Parameters
 
   | Parameter | Type   | Required | Description      |
   | --------- | ------ | -------- | ---------------- |
@@ -286,7 +289,7 @@ Creates a new employee.
 
 Replace a specific employee by ID.
 
-- Query Parameters
+- Route Parameters
 
   | Parameter | Type   | Required | Description      |
   | --------- | ------ | -------- | ---------------- |
@@ -318,7 +321,7 @@ Replace a specific employee by ID.
 
 Update one or more fields of an employee by ID.
 
-- Query Parameters
+- Route Parameters
 
   | Parameter | Type   | Required | Description      |
   | --------- | ------ | -------- | ---------------- |
@@ -349,7 +352,7 @@ Update one or more fields of an employee by ID.
 
 Deletes an employee by ID.
 
-- Query Parameters
+- Route Parameters
 
   | Parameter | Type   | Required | Description      |
   | --------- | ------ | -------- | ---------------- |
@@ -376,11 +379,18 @@ Deletes an employee by ID.
 
 #### `GET /trains`
 
-Retrieves a list of all trains.
+Retrieves a list of all trains. Query params can be added for searching trains that match the given params.
 
 - Query Parameters
 
-  None
+  | Parameter        | Type   | Required | Description                                          |
+  | ---------------- | ------ | -------- | ---------------------------------------------------- |
+  | `model`          | string | No       | The model type of the train .                        |
+  | `totalCars`      | number | No       | Total number of cars in the train.                   |
+  | `capacityPerCar` | number | No       | Maximum quantity of people that fits in each car.    |
+  | `status`         | string | No       | The status of the train.                             |
+  | `scheduleId`     | number | No       | The id corresponding to the schedule it is in.       |
+  | `conductorId`    | number | No       | The id corresponding to the employee that drives it. |
 
 - Response
 
@@ -414,7 +424,7 @@ Retrieves a list of all trains.
 
 Retrieves a specific train by ID.
 
-- Query Parameters
+- Route Parameters
 
   | Parameter | Type   | Required | Description   |
   | --------- | ------ | -------- | ------------- |
@@ -475,7 +485,7 @@ Creates a new train.
 
 Replace a specific train by ID.
 
-- Query Parameters
+- Route Parameters
 
   | Parameter | Type   | Required | Description   |
   | --------- | ------ | -------- | ------------- |
@@ -515,7 +525,7 @@ Replace a specific train by ID.
 
 Update one or more fields of an train by ID.
 
-- Query Parameters
+- Route Parameters
 
   | Parameter | Type   | Required | Description   |
   | --------- | ------ | -------- | ------------- |
@@ -550,7 +560,7 @@ Update one or more fields of an train by ID.
 
 Deletes an trains by ID.
 
-- Query Parameters
+- Route Parameters
 
   | Parameter | Type   | Required | Description   |
   | --------- | ------ | -------- | ------------- |
@@ -585,7 +595,12 @@ Returns the schedule of trains for the day.
 
 - Query Parameters
 
-  None
+  | Parameter          | Type   | Required | Description                                               |
+  | ------------------ | ------ | -------- | --------------------------------------------------------- |
+  | `departureStation` | string | No       | The departure station of the schedule.                    |
+  | `arrivalStation`   | string | No       | The arrival station of the schedule.                      |
+  | `departureTime`    | string | No       | The departure time of the schedule in the format HH:mm a. |
+  | `arrivalTime`      | string | No       | The arrival time of the schedule in the format HH:mm a.   |
 
 - Response
 
@@ -622,7 +637,7 @@ Returns the schedule of trains for the day.
 
 Retrieves a specific schedule by ID.
 
-- Query Parameters
+- Route Parameters
 
   | Parameter | Type   | Required | Description      |
   | --------- | ------ | -------- | ---------------- |
@@ -677,7 +692,7 @@ Creates a new schedule.
 
 Replace a specific schedule by ID.
 
-- Query Parameters
+- Route Parameters
 
   | Parameter | Type   | Required | Description      |
   | --------- | ------ | -------- | ---------------- |
@@ -713,7 +728,7 @@ Replace a specific schedule by ID.
 
 Update one or more fields of a schedule record by ID.
 
-- Query Parameters
+- Route Parameters
 
   | Parameter | Type   | Required | Description      |
   | --------- | ------ | -------- | ---------------- |
@@ -747,7 +762,7 @@ Update one or more fields of a schedule record by ID.
 
 Deletes a schedule record by ID.
 
-- Query Parameters
+- Route Parameters
 
   | Parameter | Type   | Required | Description      |
   | --------- | ------ | -------- | ---------------- |
