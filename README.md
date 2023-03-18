@@ -17,6 +17,9 @@
 - [Metro API Documentation](#metro-api-documentation)
   - [Base URL](#base-url)
   - [Authentication](#authentication)
+    - [Obtaining JWT Tokens](#obtaining-jwt-tokens)
+    - [Using JWT Tokens](#using-jwt-tokens)
+    - [Registering a New User](#registering-a-new-user)
   - [Endpoints](#endpoints)
     - [General Responses](#general-responses)
       - [Record found/updated](#record-foundupdated)
@@ -100,7 +103,72 @@ This API provides information about employees, trains, schedules and stations fo
 
 ## Authentication
 
-This API does not require authentication.
+This API uses JWT Tokens for authentication.
+
+### Obtaining JWT Tokens
+
+To access protected endpoints, you need to obtain a JWT token by sending a POST request to the `/login` endpoint with your username and password in the request body. If the credentials are valid, the server will return a JWT token in the response.
+
+```
+POST /login
+Content-Type: application/json
+
+{
+  "username": "your_username",
+  "password": "your_password"
+}
+```
+
+The response will look like this:
+
+```
+HTTP/1.1 200 OK
+Content-Type: application/json
+
+{
+  "success" true,
+  "data" {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+  }
+}
+```
+
+### Using JWT Tokens
+
+Once you have obtained a JWT token, you need to include it in the Authorization header of your requests to protected endpoints. The token should be preceded by the word "Bearer".
+
+```
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0N
+```
+
+### Registering a New User
+
+To register a new user, you can send a POST request to the `/register` endpoint with a username and password in the request body.
+
+```
+POST /register
+Content-Type: application/json
+
+{
+  "username": "new_username",
+  "password": "new_password"
+}
+```
+
+The server will respond with a status code of 201 Created if the user was successfully registered, including token in the response body.
+
+```
+HTTP/1.1 201 Created
+Content-Type: application/json
+
+{
+  "success": true,
+  "data": {
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+  }
+}
+
+```
 
 ## Endpoints
 
