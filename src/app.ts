@@ -2,7 +2,7 @@
 import express from "express";
 import morgan from "morgan";
 import dotenv from "dotenv";
-import { login, protect, register } from "./modules/auth";
+import { loginHandler, protect, registerHandler } from "./modules/auth";
 import { CustomRequest } from "./types/CustomRequest";
 
 dotenv.config();
@@ -14,8 +14,8 @@ const app = express();
 app.use(morgan("dev"));
 app.use(express.json());
 
-app.post("/login", login);
-app.post("/register", register);
+app.post("/login", loginHandler);
+app.post("/register", registerHandler);
 
 app.use(protect, (req: CustomRequest, res) => {
   res.statusCode = 200;

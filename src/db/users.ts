@@ -2,7 +2,7 @@
 
 import { User } from "../types/User";
 
-export const users: Record<User["id"], User> = {
+const users: Record<User["id"], User> = {
   1: {
     id: 1,
     username: "admin",
@@ -14,3 +14,5 @@ export const users: Record<User["id"], User> = {
     password: "$2b$10$V4h/tabohOJWBD9xFBMeMuSoNZEmqNU7w8sE7h5mdgRw5D6FKDtyS", //user123
   },
 };
+
+export default users;

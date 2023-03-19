@@ -1,20 +1,57 @@
 import { NextFunction, Response } from "express";
-import bcrypt from "bcrypt";
+import bcrypt, { compareSync } from "bcrypt";
 import crypto from "crypto";
 import { CustomRequest } from "../types/CustomRequest";
-import UserController from "../controllers/UserController";
 import { User, checkIsUserPassword, checkIsUserUsername } from "../types/User";
+import {
+  createUser,
+  getUserById,
+  getUserByUsername,
+} from "../models/userMemory.model";
+import AuthError from "./AuthError";
 
-class AuthError extends Error {}
+const TIME_TO_EXPIRE = 1000 * 60; //ms
+const SALT = 10;
 
-const generateToken = (
-  payload: Pick<User, "id" | "username">,
-  secret: string
-): string => {
+type JWTPayload<T> = T & { exp: string };
+
+type JWTData<T extends { id: unknown; username: unknown }> = Pick<
+  T,
+  "id" | "username"
+>;
+
+const checkIsJWTPayload = <T>(toCheck: unknown): toCheck is JWTPayload<T> => {
+  if (typeof toCheck !== "object" || !toCheck) return false;
+  return "exp" in toCheck && typeof toCheck.exp === "string";
+};
+
+const getTokenFromHeaders = (bearer: string | undefined) => {
+  if (!bearer) {
+    throw new AuthError("No token found");
+  }
+  const [, token] = bearer.split(" ");
+  if (!token) {
+    throw new AuthError("Invalid token");
+  }
+  return token;
+};
+
+const hashPassword = (password: string): string =>
+  bcrypt.hashSync(password, SALT);
+
+const comparePassword = (password: string, dbPassword: string): boolean =>
+  compareSync(password, dbPassword);
+
+const getNewExpDate = (date = new Date()) =>
+  new Date(date.getTime() + TIME_TO_EXPIRE);
+
+const generateToken = (payload: JWTData<User>, secret: string): string => {
   const header = Buffer.from(
     JSON.stringify({ typ: "JTW", alg: "HS256" })
   ).toString("base64");
-  const data = Buffer.from(JSON.stringify(payload)).toString("base64");
+  const data = Buffer.from(
+    JSON.stringify({ ...payload, exp: getNewExpDate() })
+  ).toString("base64");
   const signature = crypto
     .createHmac("sha256", secret)
     .update(`${header}.${data}`)
@@ -22,10 +59,7 @@ const generateToken = (
   return `${header}.${data}.${signature}`;
 };
 
-const verifyToken = (
-  token: string,
-  secret: string
-): Pick<User, "id" | "username"> | null => {
+const verifyToken = (token: string, secret: string): JWTData<User> => {
   const [header64, data64, signature64] = token.split(".");
 
   const expectedSignature = crypto
@@ -33,17 +67,25 @@ const verifyToken = (
     .update(header64 + "." + data64)
     .digest("base64");
 
-  if (signature64 !== expectedSignature) return null;
+  if (signature64 !== expectedSignature)
+    throw new AuthError("Not matching signatures");
   const userStr = Buffer.from(data64, "base64").toString();
-  return JSON.parse(userStr) as Pick<User, "id" | "username">;
+  const payload: unknown = JSON.parse(userStr);
+  if (!checkIsJWTPayload<JWTData<User>>(payload))
+    throw new AuthError("Unexpected Signature");
+  const { username, id, exp } = payload;
+  const expDate = new Date(exp);
+  if (expDate < new Date()) throw new AuthError("Expired token");
+  return { username, id };
 };
 
 const authenticate = (
   username: User["username"],
   password: User["password"]
-) => {
-  const user = new UserController().getUserByUsername(username);
-  if (!user || !bcrypt.compareSync(password, user.password)) return null;
+): string => {
+  const user = getUserByUsername(username);
+  if (!user || !comparePassword(password, user.password))
+    throw new AuthError("Wrong user or password");
 
   const token = generateToken(
     { id: user.id, username: user.username },
@@ -59,21 +101,13 @@ export const protect = (
 ) => {
   const bearer = req.headers.authorization;
   try {
-    if (!bearer) {
-      throw new AuthError("No token found");
-    }
-    const [, token] = bearer.split(" ");
-    if (!token) {
-      throw new AuthError("Invalid token");
-    }
+    const token = getTokenFromHeaders(bearer);
     const user = verifyToken(token, process.env.JWT_SECRET_KEY!);
-    if (!user) {
-      throw new AuthError("Unexpected Signature");
-    }
-    const userFromDB = new UserController().getUserById(user.id);
+    const userFromDB = getUserById(user.id);
     if (!userFromDB || userFromDB.username !== user.username) {
       throw new AuthError("User not found");
     }
+
     req.user = userFromDB;
     next();
   } catch (e: unknown) {
@@ -87,7 +121,7 @@ export const protect = (
   }
 };
 
-export const login = (req: CustomRequest, res: Response) => {
+export const loginHandler = (req: CustomRequest, res: Response) => {
   const user = req.body as Partial<User>;
   try {
     const { username, password } = user;
@@ -95,9 +129,6 @@ export const login = (req: CustomRequest, res: Response) => {
       throw new AuthError("No user or password found");
     }
     const token = authenticate(username, password);
-    if (!token) {
-      throw new AuthError("Wrong user or password");
-    }
     res.json({ success: true, data: { token } });
   } catch (e: unknown) {
     res.status(401);
@@ -110,12 +141,12 @@ export const login = (req: CustomRequest, res: Response) => {
   }
 };
 
-export const register = (req: CustomRequest, res: Response) => {
+export const registerHandler = (req: CustomRequest, res: Response) => {
   const user = req.body as Omit<User, "id">;
   try {
-    const newUser = new UserController().postUser({
+    const newUser = createUser({
       ...user,
-      password: bcrypt.hashSync(user.password, 10),
+      password: hashPassword(user.password),
     });
     const token = generateToken(
       { id: newUser.id, username: newUser.username },
