@@ -14,6 +14,7 @@
   - [Usage](#usage)
     - [Using Docker](#using-docker)
     - [Using `npm start`](#using-npm-start)
+- [Data Modeling](#data-modeling)
 - [Metro API Documentation](#metro-api-documentation)
   - [Base URL](#base-url)
   - [Authentication](#authentication)
@@ -92,6 +93,12 @@ Additionally, you can use `docker:run:exposed:it` to run the container with an i
 1. Install dependencies with `npm install`
 2. Run the application with `npm start`
 3. Access the server at http://localhost:3000
+
+# Data Modeling
+
+![data-modeling](src/db/laba.solvd_metro%20-%20public.png)
+
+[Here you can read more](src/db/README.md)
 
 # Metro API Documentation
 
@@ -428,16 +435,7 @@ Deletes an employee by ID.
 
 - Response
 
-  ```
-  {
-    "success": true,
-    "data": {
-      "id": 3,
-      "name": "Bob Johnson",
-      "position": "Train Conductor"
-    }
-  }
-  ```
+  No Body
 
 [⬆ Go To Table of contents ⬆](#table-of-contents) ----|---- [⬆ Go To Employees ⬆](#employees)
 
@@ -451,14 +449,12 @@ Retrieves a list of all trains. Query params can be added for searching trains t
 
 - Query Parameters
 
-  | Parameter        | Type   | Required | Description                                          |
-  | ---------------- | ------ | -------- | ---------------------------------------------------- |
-  | `model`          | string | No       | The model type of the train .                        |
-  | `totalCars`      | number | No       | Total number of cars in the train.                   |
-  | `capacityPerCar` | number | No       | Maximum quantity of people that fits in each car.    |
-  | `status`         | string | No       | The status of the train.                             |
-  | `scheduleId`     | number | No       | The id corresponding to the schedule it is in.       |
-  | `conductorId`    | number | No       | The id corresponding to the employee that drives it. |
+  | Parameter        | Type   | Required | Description                                       |
+  | ---------------- | ------ | -------- | ------------------------------------------------- |
+  | `model`          | string | No       | The model type of the train .                     |
+  | `totalCars`      | number | No       | Total number of cars in the train.                |
+  | `capacityPerCar` | number | No       | Maximum quantity of people that fits in each car. |
+  | `lineId`         | number | No       | The Id of the Line.                               |
 
 - Response
 
@@ -471,18 +467,14 @@ Retrieves a list of all trains. Query params can be added for searching trains t
         "model": "Commuter Express",
         "totalCars": 6,
         "capacityPerCar": 50,
-        "status": "active",
-        "scheduleId": 1,
-        "conductorId": 1
+        "lineId": 1,
       },
       {
         "id": 2,
         "model": "Commuter Express",
         "totalCars": 6,
         "capacityPerCar": 50,
-        "status": "delayed",
-        "scheduleId": 2,
-        "conductorId": 4
+        "lineId": 4
       }
     ]
   }
@@ -508,9 +500,7 @@ Retrieves a specific train by ID.
       "model": "Commuter Express",
       "totalCars": 6,
       "capacityPerCar": 50,
-      "status": "active",
-      "scheduleId": 1,
-      "conductorId": 1
+      "lineId": 1,
     }
   }
   ```
@@ -526,9 +516,7 @@ Creates a new train.
     "model": "Commuter Express",
     "totalCars": 6,
     "capacityPerCar": 50,
-    "status": "active",
-    "scheduleId": 3,
-    "conductorId": 3
+    "lineId": 3
   }
   ```
 
@@ -542,9 +530,7 @@ Creates a new train.
       "model": "Commuter Express",
       "totalCars": 6,
       "capacityPerCar": 50,
-      "status": "active",
-      "scheduleId": 3,
-      "conductorId": 3
+      "lineId": 3
     }
   }
   ```
@@ -566,9 +552,7 @@ Replace a specific train by ID.
     "model": "Commuter Express",
     "totalCars": 6,
     "capacityPerCar": 60,
-    "status": "active",
-    "scheduleId": 4,
-    "conductorId": 4
+    "lineId": 4
   }
   ```
 
@@ -582,9 +566,7 @@ Replace a specific train by ID.
       "model": "Commuter Express",
       "totalCars": 6,
       "capacityPerCar": 60,
-      "status": "active",
-      "scheduleId": 4,
-      "conductorId": 4
+      "lineId": 4
     }
   }
   ```
@@ -603,7 +585,7 @@ Update one or more fields of an train by ID.
 
   ```
   {
-    "status": "out of service"
+    "lineId": 6
   }
   ```
 
@@ -617,9 +599,7 @@ Update one or more fields of an train by ID.
       "model": "Commuter Express",
       "totalCars": 6,
       "capacityPerCar": 50,
-      "status": "out of service",
-      "scheduleId": 1,
-      "conductorId": 1
+      "lineId": 6
     }
   }
   ```
@@ -636,20 +616,7 @@ Deletes an trains by ID.
 
 - Response
 
-  ```
-  {
-    "success": true,
-    "data": {
-      "id": 1,
-      "model": "Commuter Express",
-      "totalCars": 6,
-      "capacityPerCar": 50,
-      "status": "active",
-      "scheduleId": 1,
-      "conductorId": 1
-    }
-  }
-  ```
+  No Body
 
 [⬆ Go To Table of contents ⬆](#table-of-contents) ----|---- [⬆ Go To Train ⬆](#trains)
 
@@ -663,12 +630,15 @@ Returns the schedule of trains for the day.
 
 - Query Parameters
 
-  | Parameter          | Type   | Required | Description                                               |
-  | ------------------ | ------ | -------- | --------------------------------------------------------- |
-  | `departureStation` | string | No       | The departure station of the schedule.                    |
-  | `arrivalStation`   | string | No       | The arrival station of the schedule.                      |
-  | `departureTime`    | string | No       | The departure time of the schedule in the format HH:mm a. |
-  | `arrivalTime`      | string | No       | The arrival time of the schedule in the format HH:mm a.   |
+  | Parameter        | Type   | Required | Description                                               |
+  | ---------------- | ------ | -------- | --------------------------------------------------------- |
+  | `startStationId` | number | No       | The departure station of the schedule.                    |
+  | `endStationId`   | number | No       | The arrival station of the schedule.                      |
+  | `departureTime`  | string | No       | The departure time of the schedule in the format HH:mm a. |
+  | `arrivalTime`    | string | No       | The arrival time of the schedule in the format HH:mm a.   |
+  | `trainId`        | number | No       | The id of the train of the current schedule               |
+  | `driverId`       | number | No       | The id of the employee that is driver of the train.       |
+  | `operatorId`     | number | No       | The id of the employee that is operator of the train.     |
 
 - Response
 
@@ -678,22 +648,31 @@ Returns the schedule of trains for the day.
     "data": [
       {
         "id": 1,
-        "departureStation": "North Station",
-        "arrivalStation": "South Station",
+        "startStationId": 1,
+        "endStationId": 2,
+        "driverId": 1,
+        "operatorId": 2,
+        "trainId": 1,
         "departureTime": "07:00 AM",
         "arrivalTime": "07:30 AM"
       },
       {
         "id": 2,
-        "departureStation": "East Station",
-        "arrivalStation": "West Station",
+        "startStationId": 2,
+        "endStationId": 3,
+        "driverId": 6,
+        "operatorId": 7,
+        "trainId": 2,
         "departureTime": "08:00 AM",
         "arrivalTime": "08:30 AM"
       },
       {
         "id": 3,
-        "departureStation": "Central Station",
-        "arrivalStation": "Main Station",
+        "startStationId": 3,
+        "endStationId": 4,
+        "driverId": 10,
+        "operatorId": 11,
+        "trainId": 3,
         "departureTime": "09:00 AM",
         "arrivalTime": "09:30 AM"
       }
@@ -718,8 +697,11 @@ Retrieves a specific schedule by ID.
     "success": true,
     "data": {
       "id": 1,
-      "departureStation": "North Station",
-      "arrivalStation": "South Station",
+      "startStationId": 1,
+      "endStationId": 2,
+      "driverId": 1,
+      "operatorId": 2,
+      "trainId": 1,
       "departureTime": "07:00 AM",
       "arrivalTime": "07:30 AM"
     }
@@ -734,8 +716,11 @@ Creates a new schedule.
 
   ```
   {
-    "departureStation": "City Station",
-    "arrivalStation": "Metro Station",
+    "startStationId": 3,
+    "endStationId": 4,
+    "driverId": 10,
+    "operatorId": 11,
+    "trainId": 3,
     "departureTime": "09:30 AM",
     "arrivalTime": "10:00 AM"
   }
@@ -748,8 +733,11 @@ Creates a new schedule.
     "success": true,
     "data": {
       "id": 4,
-      "departureStation": "City Station",
-      "arrivalStation": "Metro Station",
+      "startStationId": 3,
+      "endStationId": 4,
+      "driverId": 10,
+      "operatorId": 11,
+      "trainId": 3,
       "departureTime": "09:30 AM",
       "arrivalTime": "10:00 AM"
     }
@@ -770,8 +758,11 @@ Replace a specific schedule by ID.
 
   ```
   {
-    "departureStation": "City Station",
-    "arrivalStation": "Metro Station",
+    "startStationId": 3,
+    "endStationId": 4,
+    "driverId": 10,
+    "operatorId": 11,
+    "trainId": 3,
     "departureTime": "09:30 AM",
     "arrivalTime": "10:00 AM"
   }
@@ -784,8 +775,11 @@ Replace a specific schedule by ID.
     "success": true,
     "data": {
       "id": 1,
-      "departureStation": "City Station",
-      "arrivalStation": "Metro Station",
+      "startStationId": 3,
+      "endStationId": 4,
+      "driverId": 10,
+      "operatorId": 11,
+      "trainId": 3,
       "departureTime": "09:30 AM",
       "arrivalTime": "10:00 AM"
     }
@@ -806,8 +800,8 @@ Update one or more fields of a schedule record by ID.
 
   ```
   {
-    "departureStation": "Terminal Station",
-    "arrivalStation": "Union Station",
+    "operatorId": 15,
+      "trainId": 20,
   }
   ```
 
@@ -818,8 +812,11 @@ Update one or more fields of a schedule record by ID.
     "success": true,
     "data": {
       "id": 1,
-      "departureStation": "Terminal Station",
-      "arrivalStation": "Union Station",
+      "startStationId": 3,
+      "endStationId": 4,
+      "driverId": 10,
+      "operatorId": 15,
+      "trainId": 20,
       "departureTime": "07:00 AM",
       "arrivalTime": "07:30 AM"
     }
@@ -838,17 +835,6 @@ Deletes a schedule record by ID.
 
 - Response
 
-  ```
-  {
-    "success": true,
-    "data": {
-      "id": 1,
-      "departureStation": "North Station",
-      "arrivalStation": "South Station",
-      "departureTime": "07:00 AM",
-      "arrivalTime": "07:30 AM"
-    }
-  }
-  ```
+  No Body
 
 [⬆ Go To Table of contents ⬆](#table-of-contents) ----|---- [⬆ Go To Schedule ⬆](#schedules)
