@@ -1,11 +1,10 @@
 # Laba Personal Project
 
-### Laba.Solvd Nodejs Course
+Laba.Solvd Nodejs Course
 
 ## Table of contents
 
 - [Laba Personal Project](#laba-personal-project)
-  - [Laba.Solvd Nodejs Course](#labasolvd-nodejs-course)
   - [Table of contents](#table-of-contents)
   - [About](#about)
   - [Assignment](#assignment)
@@ -632,13 +631,10 @@ Returns the schedule of trains for the day.
 
   | Parameter        | Type   | Required | Description                                               |
   | ---------------- | ------ | -------- | --------------------------------------------------------- |
+  | `startTime`      | string | No       | The departure time of the schedule in the format HH:mm a. |
+  | `endTime`        | string | No       | The arrival time of the schedule in the format HH:mm a.   |
   | `startStationId` | number | No       | The departure station of the schedule.                    |
   | `endStationId`   | number | No       | The arrival station of the schedule.                      |
-  | `departureTime`  | string | No       | The departure time of the schedule in the format HH:mm a. |
-  | `arrivalTime`    | string | No       | The arrival time of the schedule in the format HH:mm a.   |
-  | `trainId`        | number | No       | The id of the train of the current schedule               |
-  | `driverId`       | number | No       | The id of the employee that is driver of the train.       |
-  | `operatorId`     | number | No       | The id of the employee that is operator of the train.     |
 
 - Response
 
@@ -650,31 +646,22 @@ Returns the schedule of trains for the day.
         "id": 1,
         "startStationId": 1,
         "endStationId": 2,
-        "driverId": 1,
-        "operatorId": 2,
-        "trainId": 1,
-        "departureTime": "07:00 AM",
-        "arrivalTime": "07:30 AM"
+        "startTime": "07:00 AM",
+        "endTime": "07:30 AM"
       },
       {
         "id": 2,
         "startStationId": 2,
         "endStationId": 3,
-        "driverId": 6,
-        "operatorId": 7,
-        "trainId": 2,
-        "departureTime": "08:00 AM",
-        "arrivalTime": "08:30 AM"
+        "startTime": "08:00 AM",
+        "endTime": "08:30 AM"
       },
       {
         "id": 3,
         "startStationId": 3,
         "endStationId": 4,
-        "driverId": 10,
-        "operatorId": 11,
-        "trainId": 3,
-        "departureTime": "09:00 AM",
-        "arrivalTime": "09:30 AM"
+        "startTime": "09:00 AM",
+        "endTime": "09:30 AM"
       }
     ]
   }
@@ -699,11 +686,8 @@ Retrieves a specific schedule by ID.
       "id": 1,
       "startStationId": 1,
       "endStationId": 2,
-      "driverId": 1,
-      "operatorId": 2,
-      "trainId": 1,
-      "departureTime": "07:00 AM",
-      "arrivalTime": "07:30 AM"
+      "startTime": "07:00 AM",
+      "endTime": "07:30 AM"
     }
   }
   ```
@@ -718,11 +702,8 @@ Creates a new schedule.
   {
     "startStationId": 3,
     "endStationId": 4,
-    "driverId": 10,
-    "operatorId": 11,
-    "trainId": 3,
-    "departureTime": "09:30 AM",
-    "arrivalTime": "10:00 AM"
+    "startTime": "09:30 AM",
+    "endTime": "10:00 AM"
   }
   ```
 
@@ -735,11 +716,8 @@ Creates a new schedule.
       "id": 4,
       "startStationId": 3,
       "endStationId": 4,
-      "driverId": 10,
-      "operatorId": 11,
-      "trainId": 3,
-      "departureTime": "09:30 AM",
-      "arrivalTime": "10:00 AM"
+      "startTime": "09:30 AM",
+      "endTime": "10:00 AM"
     }
   }
   ```
@@ -760,11 +738,8 @@ Replace a specific schedule by ID.
   {
     "startStationId": 3,
     "endStationId": 4,
-    "driverId": 10,
-    "operatorId": 11,
-    "trainId": 3,
-    "departureTime": "09:30 AM",
-    "arrivalTime": "10:00 AM"
+    "startTime": "09:30 AM",
+    "endTime": "10:00 AM"
   }
   ```
 
@@ -777,11 +752,8 @@ Replace a specific schedule by ID.
       "id": 1,
       "startStationId": 3,
       "endStationId": 4,
-      "driverId": 10,
-      "operatorId": 11,
-      "trainId": 3,
-      "departureTime": "09:30 AM",
-      "arrivalTime": "10:00 AM"
+      "startTime": "09:30 AM",
+      "endTime": "10:00 AM"
     }
   }
   ```
@@ -800,8 +772,6 @@ Update one or more fields of a schedule record by ID.
 
   ```
   {
-    "operatorId": 15,
-      "trainId": 20,
   }
   ```
 
@@ -814,11 +784,8 @@ Update one or more fields of a schedule record by ID.
       "id": 1,
       "startStationId": 3,
       "endStationId": 4,
-      "driverId": 10,
-      "operatorId": 15,
-      "trainId": 20,
-      "departureTime": "07:00 AM",
-      "arrivalTime": "07:30 AM"
+      "startTime": "07:00 AM",
+      "endTime": "07:30 AM"
     }
   }
   ```
