@@ -16,6 +16,7 @@
     - [Cycle](#cycle)
     - [RouteRegment](#routeregment)
   - [Relationships](#relationships)
+  - [Creating Database Structure](#creating-database-structure)
 
 ## Purpose
 
@@ -113,3 +114,7 @@ The relationships between the tables are as follows:
 - `Station`s can have multiples `Schedules` associated with them(one-to-many) at `Schedule(startStationId)` and `Schedule(endStationId)`. `Schedule`s will be the journey between 2 stations, but many `Station`s can be in different `Schedule`s of the day.
 - `Schedule`s can have multiples `RouteSegment`s and `Cycle`s associated with them(many-to-many) at `RouteSegment(scheduleId)` and `Cycle(scheduleId)`. In this case, `Schedule(startStationId)` and `Schedule(endStationId)` will differ in each case, being in `RouteSegment` 2 contiguous `Station`s and in `Cycle`s 2 extremes of the `Line`.
 - `Cycle`s can have multiples `RouteSegment`s associated with them(many-to-many). A `Cycle` will be composed of many pieces of `RouteSegment`s.
+
+## Creating Database Structure
+
+This PostgreSQL database was created following [these instructions](./init.sql)
