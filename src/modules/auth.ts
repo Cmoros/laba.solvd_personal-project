@@ -123,14 +123,14 @@ export const protect = async (
   }
 };
 
-export const loginHandler = (req: CustomRequest, res: Response) => {
+export const loginHandler = async (req: CustomRequest, res: Response) => {
   const user = req.body as Partial<User>;
   try {
     const { username, password } = user;
     if (!checkIsUserUsername(username) || !checkIsUserPassword(password)) {
       throw new AuthError("No user or password found");
     }
-    const token = authenticate(username, password);
+    const token: string = await authenticate(username, password);
     res.json({ success: true, data: { token } });
   } catch (e: unknown) {
     res.status(401);
