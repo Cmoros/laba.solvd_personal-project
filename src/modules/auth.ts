@@ -1,5 +1,5 @@
 import { NextFunction, Response } from "express";
-import bcrypt, { compareSync } from "bcrypt";
+import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { CustomRequest } from "../types/CustomRequest";
 import { User, checkIsUserPassword, checkIsUserUsername } from "../types/User";
@@ -36,11 +36,13 @@ const getTokenFromHeaders = (bearer: string | undefined) => {
   return token;
 };
 
-const hashPassword = (password: string): string =>
-  bcrypt.hashSync(password, SALT);
+const hashPassword = (password: string): Promise<string> =>
+  bcrypt.hash(password, SALT);
 
-const comparePassword = (password: string, dbPassword: string): boolean =>
-  compareSync(password, dbPassword);
+const comparePassword = (
+  password: string,
+  dbPassword: string
+): Promise<boolean> => bcrypt.compare(password, dbPassword);
 
 const getNewExpDate = (date = new Date()) =>
   new Date(date.getTime() + TIME_TO_EXPIRE);
@@ -79,12 +81,12 @@ const verifyToken = (token: string, secret: string): JWTData<User> => {
   return { username, id };
 };
 
-const authenticate = (
+const authenticate = async (
   username: User["username"],
   password: User["password"]
-): string => {
-  const user = getUserByUsername(username);
-  if (!user || !comparePassword(password, user.password))
+): Promise<string> => {
+  const user = await getUserByUsername(username);
+  if (!user || !(await comparePassword(password, user.password)))
     throw new AuthError("Wrong user or password");
 
   const token = generateToken(
@@ -94,7 +96,7 @@ const authenticate = (
   return token;
 };
 
-export const protect = (
+export const protect = async (
   req: CustomRequest,
   res: Response,
   next: NextFunction
@@ -103,7 +105,7 @@ export const protect = (
   try {
     const token = getTokenFromHeaders(bearer);
     const user = verifyToken(token, process.env.JWT_SECRET_KEY!);
-    const userFromDB = getUserById(user.id);
+    const userFromDB = await getUserById(user.id);
     if (!userFromDB || userFromDB.username !== user.username) {
       throw new AuthError("User not found");
     }
@@ -141,12 +143,12 @@ export const loginHandler = (req: CustomRequest, res: Response) => {
   }
 };
 
-export const registerHandler = (req: CustomRequest, res: Response) => {
+export const registerHandler = async (req: CustomRequest, res: Response) => {
   const user = req.body as Omit<User, "id">;
   try {
-    const newUser = createUser({
+    const newUser = await createUser({
       ...user,
-      password: hashPassword(user.password),
+      password: await hashPassword(user.password),
     });
     const token = generateToken(
       { id: newUser.id, username: newUser.username },
