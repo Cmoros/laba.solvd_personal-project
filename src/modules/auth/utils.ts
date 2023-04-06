@@ -28,8 +28,7 @@ const createSignature = (
   return crypto
     .createHmac("sha256", secret)
     .update(`${header64}.${data64}`)
-    .digest("base64")
-    .slice(0, -1);
+    .digest("base64");
 };
 
 export const hashPassword = (password: string): Promise<string> =>
@@ -48,7 +47,7 @@ export const generateToken = (
   secret: string
 ): string => {
   const header64 = Buffer.from(
-    JSON.stringify({ typ: "JTW", alg: "HS256" })
+    JSON.stringify({ typ: "JWT", alg: "HS256" })
   ).toString("base64");
   const data64 = Buffer.from(
     JSON.stringify({ ...payload, exp: getNewExpTime() })
