@@ -1,6 +1,11 @@
 import bcrypt from "bcrypt";
 import crypto from "crypto";
-import { User } from "../../types/User";
+import {
+  User,
+  checkIsUserId,
+  checkIsUserPassword,
+  checkIsUserUsername,
+} from "../../types/User";
 import { getUserByUsername } from "../../models/userMemory.model";
 import AuthError from "./AuthError";
 import { JWTData, checkIsJWTPayload } from "../../types/JWTData";
@@ -83,6 +88,8 @@ export const verifyToken = (token: string, secret: string): JWTData<User> => {
   if (!checkIsJWTPayload<JWTData<User>>(payload))
     throw new AuthError("Unexpected Signature");
   const { username, id, exp } = payload;
+  if (!checkIsUserUsername(username) || !checkIsUserId(id))
+    throw new AuthError("Unexpected Signature");
   const expDate = new Date(exp);
   if (new Date() > expDate) throw new AuthError("Expired token");
   return { username, id };
