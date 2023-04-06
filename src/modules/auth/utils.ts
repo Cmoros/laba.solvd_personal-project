@@ -20,6 +20,25 @@ export const getTokenFromHeaders = (bearer: string | undefined) => {
   return token;
 };
 
+/*
+const replaceSpecialChars = (b64string: string): string => {
+  return b64string.replace(/[=+/]/g, (charToBeReplaced) => {
+    switch (charToBeReplaced) {
+      case "=":
+        return "";
+      case "+":
+        return "-";
+      case "/":
+        return "_";
+    }
+    return charToBeReplaced;
+  });
+};
+*/
+
+const toBase64 = (obj: object): string =>
+  Buffer.from(JSON.stringify(obj)).toString("base64");
+
 const createSignature = (
   header64: string,
   data64: string,
@@ -46,12 +65,8 @@ export const generateToken = (
   payload: JWTData<User>,
   secret: string
 ): string => {
-  const header64 = Buffer.from(
-    JSON.stringify({ typ: "JWT", alg: "HS256" })
-  ).toString("base64");
-  const data64 = Buffer.from(
-    JSON.stringify({ ...payload, exp: getNewExpTime() })
-  ).toString("base64");
+  const header64 = toBase64({ typ: "JWT", alg: "HS256" });
+  const data64 = toBase64({ ...payload, exp: getNewExpTime() });
   const signature = createSignature(header64, data64, secret);
   return `${header64}.${data64}.${signature}`;
 };
