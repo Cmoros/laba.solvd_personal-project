@@ -18,7 +18,8 @@
     "lint": "eslint \"src/**/*.{ts}\" --quiet",
     "format": "prettier --write 'src/**/*.{ts}'",
     "format:check": "prettier -c 'src/**/*.{ts}'",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "jest --coverage"
   },
   "keywords": [],
   "author": "César Moros <rdcesar442@gmail.com>",
