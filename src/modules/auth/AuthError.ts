@@ -1,4 +1,4 @@
-type AuthErrorMessage =
+export type AuthErrorMessage =
   | "No token found"
   | "Invalid token"
   | "Unexpected Signature"
@@ -9,7 +9,9 @@ type AuthErrorMessage =
   | "Not matching signatures";
 
 export default class AuthError extends Error {
+  message: AuthErrorMessage;
   constructor(message: AuthErrorMessage) {
     super(message);
+    this.message = message;
   }
 }
