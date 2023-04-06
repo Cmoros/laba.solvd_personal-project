@@ -20,6 +20,18 @@ export const getTokenFromHeaders = (bearer: string | undefined) => {
   return token;
 };
 
+const createSignature = (
+  header64: string,
+  data64: string,
+  secret: string
+): string => {
+  return crypto
+    .createHmac("sha256", secret)
+    .update(`${header64}.${data64}`)
+    .digest("base64")
+    .slice(0, -1);
+};
+
 export const hashPassword = (password: string): Promise<string> =>
   bcrypt.hash(password, SALT);
 
@@ -28,33 +40,27 @@ const comparePassword = (
   dbPassword: string
 ): Promise<boolean> => bcrypt.compare(password, dbPassword);
 
-const getNewExpDate = (date = new Date()) =>
-  new Date(date.getTime() + TIME_TO_EXPIRE);
+const getNewExpTime = (date = new Date()): number =>
+  date.getTime() + TIME_TO_EXPIRE;
 
 export const generateToken = (
   payload: JWTData<User>,
   secret: string
 ): string => {
-  const header = Buffer.from(
+  const header64 = Buffer.from(
     JSON.stringify({ typ: "JTW", alg: "HS256" })
   ).toString("base64");
-  const data = Buffer.from(
-    JSON.stringify({ ...payload, exp: getNewExpDate() })
+  const data64 = Buffer.from(
+    JSON.stringify({ ...payload, exp: getNewExpTime() })
   ).toString("base64");
-  const signature = crypto
-    .createHmac("sha256", secret)
-    .update(`${header}.${data}`)
-    .digest("base64");
-  return `${header}.${data}.${signature}`;
+  const signature = createSignature(header64, data64, secret);
+  return `${header64}.${data64}.${signature}`;
 };
 
 export const verifyToken = (token: string, secret: string): JWTData<User> => {
   const [header64, data64, signature64] = token.split(".");
 
-  const expectedSignature = crypto
-    .createHmac("sha256", secret)
-    .update(header64 + "." + data64)
-    .digest("base64");
+  const expectedSignature = createSignature(header64, data64, secret);
 
   if (signature64 !== expectedSignature)
     throw new AuthError("Not matching signatures");
@@ -64,7 +70,7 @@ export const verifyToken = (token: string, secret: string): JWTData<User> => {
     throw new AuthError("Unexpected Signature");
   const { username, id, exp } = payload;
   const expDate = new Date(exp);
-  if (expDate < new Date()) throw new AuthError("Expired token");
+  if (new Date() > expDate) throw new AuthError("Expired token");
   return { username, id };
 };
 
