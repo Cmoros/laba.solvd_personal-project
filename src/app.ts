@@ -1,4 +1,5 @@
-// import http from "http";
+/* eslint-disable @typescript-eslint/no-misused-promises */
+// https://github.com/expressjs/express/issues/4892
 import express from "express";
 import morgan from "morgan";
 import dotenv from "dotenv";

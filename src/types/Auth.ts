@@ -1,4 +1,4 @@
-import { AuthErrorMessage } from "../modules/AuthError";
+import { AuthErrorMessage } from "../modules/auth/AuthError";
 
 export type LoginResponse =
   | {
