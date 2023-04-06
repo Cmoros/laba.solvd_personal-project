@@ -24,3 +24,8 @@ export type RegisterResponse =
       success: false;
       error: "Invalid user, not able to register";
     };
+
+export type ProtectResponse = {
+  success: false;
+  error: `not authorized: ${AuthErrorMessage}`;
+};

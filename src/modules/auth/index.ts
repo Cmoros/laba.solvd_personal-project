@@ -65,6 +65,12 @@ export const loginHandler = async (req: CustomRequest, res: Response) => {
 export const registerHandler = async (req: CustomRequest, res: Response) => {
   const user = req.body as Omit<User, "id">;
   try {
+    if (
+      !checkIsUserUsername(user.username) ||
+      !checkIsUserPassword(user.password)
+    ) {
+      throw new Error();
+    }
     const newUser = await createUser({
       ...user,
       password: await hashPassword(user.password),
@@ -74,9 +80,9 @@ export const registerHandler = async (req: CustomRequest, res: Response) => {
       process.env.JWT_SECRET_KEY!
     );
     res.status(201);
-    res.json({ sucess: true, data: { token } });
+    res.json({ success: true, data: { token } });
   } catch (e: unknown) {
     res.status(400);
-    res.json({ sucess: false, error: "Invalid user, not able to register" });
+    res.json({ success: false, error: "Invalid user, not able to register" });
   }
 };
