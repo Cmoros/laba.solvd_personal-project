@@ -17,5 +17,5 @@ export const checkIsUserPassword = (
 };
 
 export const checkIsUserId = (toCheck: unknown): toCheck is User["id"] => {
-  return typeof toCheck === "string";
+  return typeof toCheck === "number";
 };
