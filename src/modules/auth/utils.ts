@@ -5,7 +5,7 @@ import { getUserByUsername } from "../../models/userMemory.model";
 import AuthError from "./AuthError";
 import { JWTData, checkIsJWTPayload } from "../../types/JWTData";
 
-export const TIME_TO_EXPIRE = 1000 * 60; //ms
+export const TIME_TO_EXPIRE = 1000 * 60 * 10; //ms
 
 const SALT = 10;
 

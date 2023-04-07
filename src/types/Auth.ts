@@ -1,4 +1,5 @@
 import { AuthErrorMessage } from "../modules/auth/AuthError";
+import { User } from "./User";
 
 export type LoginResponse =
   | {
@@ -28,4 +29,13 @@ export type RegisterResponse =
 export type ProtectResponse = {
   success: false;
   error: `not authorized: ${AuthErrorMessage}`;
+};
+
+export type QueryParams<T> = {
+  [K in keyof T]?: string;
+};
+
+export type LoginUser = {
+  username: User["username"];
+  password: User["password"];
 };

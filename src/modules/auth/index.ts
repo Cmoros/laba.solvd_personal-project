@@ -1,7 +1,7 @@
 import { NextFunction, Response } from "express";
-import { CustomRequest } from "../../types/CustomRequest";
+import { UnauthorizedRequest } from "../../types/CustomRequest";
 import {
-  User,
+  NewUser,
   checkIsUserPassword,
   checkIsUserUsername,
 } from "../../types/User";
@@ -14,9 +14,10 @@ import {
   hashPassword,
   generateToken,
 } from "./utils";
+import { LoginUser } from "../../types/Auth";
 
 export const protect = async (
-  req: CustomRequest,
+  req: UnauthorizedRequest,
   res: Response,
   next: NextFunction
 ) => {
@@ -42,8 +43,11 @@ export const protect = async (
   }
 };
 
-export const loginHandler = async (req: CustomRequest, res: Response) => {
-  const user = req.body as Partial<User>;
+export const loginHandler = async (
+  req: UnauthorizedRequest<Record<string, never>, LoginUser>,
+  res: Response
+) => {
+  const user = req.body;
   try {
     const { username, password } = user;
     if (!checkIsUserUsername(username) || !checkIsUserPassword(password)) {
@@ -55,15 +59,17 @@ export const loginHandler = async (req: CustomRequest, res: Response) => {
     res.status(401);
     if (!(e instanceof AuthError)) {
       res.json({ success: false, error: "not authorized" });
-      console.error(e);
       return;
     }
     res.json({ success: false, error: `not authorized: ${e.message}` });
   }
 };
 
-export const registerHandler = async (req: CustomRequest, res: Response) => {
-  const user = req.body as Omit<User, "id">;
+export const registerHandler = async (
+  req: UnauthorizedRequest<Record<string, never>, NewUser>,
+  res: Response
+) => {
+  const user = req.body;
   try {
     if (
       !checkIsUserUsername(user.username) ||
