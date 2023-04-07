@@ -1,11 +1,6 @@
 import bcrypt from "bcrypt";
 import crypto from "crypto";
-import {
-  User,
-  checkIsUserId,
-  checkIsUserPassword,
-  checkIsUserUsername,
-} from "../../types/User";
+import { User, checkIsUserId, checkIsUserUsername } from "../../types/User";
 import { getUserByUsername } from "../../models/userMemory.model";
 import AuthError from "./AuthError";
 import { JWTData, checkIsJWTPayload } from "../../types/JWTData";

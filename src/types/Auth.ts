@@ -8,9 +8,24 @@ export type LoginResponse =
   | {
       success: false;
       error:
-        | `not authorized${Extract<
+        | `not authorized: ${Extract<
             AuthErrorMessage,
             "No user or password found" | "Wrong user or password"
           >}`
         | "not authorized";
     };
+
+export type RegisterResponse =
+  | {
+      success: true;
+      data: { token: string };
+    }
+  | {
+      success: false;
+      error: "Invalid user, not able to register";
+    };
+
+export type ProtectResponse = {
+  success: false;
+  error: `not authorized: ${AuthErrorMessage}`;
+};
