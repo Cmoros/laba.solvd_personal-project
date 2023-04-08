@@ -1,11 +1,17 @@
-import { Response } from "express";
-import QueryError from "../modules/QueryError";
+import { NextFunction, Response } from "express";
+import QueryError, { QueryErrorMessage } from "../modules/QueryError";
 
-export const handleQueryError = (res: Response, err: unknown) => {
+export const handleQueryError = (
+  err: unknown,
+  message: QueryErrorMessage,
+  next: NextFunction
+) => {
   if (err instanceof QueryError) {
-    res.status(404).json({ success: false, errors: [err.message] });
+    next(new QueryError([message, ...err.msg]));
+  } else if (err instanceof Error) {
+    next(new QueryError([message, err.message]));
   } else {
-    res.status(500).json({ success: false, errors: ["Internal server error"] });
+    next(new QueryError([message]));
   }
 };
 

@@ -11,7 +11,7 @@ import { getAllFields } from "../types/utils";
 const TABLE_NAME = "Employee";
 
 export const getAllEmployees = async (): Promise<Employee[]> => {
-  const employees = await pool.query<Employee>(`SELECT * FROM ${TABLE_NAME}`);
+  const employees = await pool.query<Employee>(`SELECT * FROM "${TABLE_NAME}"`);
   return employees.rows;
 };
 
@@ -28,7 +28,7 @@ export const getEmployeeById = async (
 ): Promise<Employee> => {
   const { queryString, values } = getSearchQuery(TABLE_NAME, { id });
   const employee = await pool.query<Employee>(queryString, values);
-  if (employee.rows.length === 0) throw new QueryError("Not found");
+  if (employee.rows.length === 0) throw new QueryError(["No rows returned"]);
 
   return employee.rows[0];
 };
@@ -38,7 +38,7 @@ export const createEmployee = async (
 ): Promise<Employee> => {
   const { queryString, values } = getCreateQuery(TABLE_NAME, newEmployee);
   const employee = await pool.query<Employee>(queryString, values);
-  if (employee.rows.length === 0) throw new QueryError("Not created");
+  if (employee.rows.length === 0) throw new QueryError(["No rows returned"]);
 
   return employee.rows[0];
 };
@@ -57,7 +57,7 @@ export const replaceEmployeeById = async (
     id
   );
   const employee = await pool.query<Employee>(queryString, values);
-  if (employee.rows.length === 0) throw new QueryError("Not updated");
+  if (employee.rows.length === 0) throw new QueryError(["No rows returned"]);
   return employee.rows[0];
 };
 
@@ -71,7 +71,7 @@ export const patchEmployeeById = async (
     id
   );
   const employee = await pool.query<Employee>(queryString, values);
-  if (employee.rows.length === 0) throw new QueryError("Not patched");
+  if (employee.rows.length === 0) throw new QueryError(["No rows returned"]);
 
   return employee.rows[0];
 };
@@ -79,9 +79,9 @@ export const patchEmployeeById = async (
 export const deleteEmployeeById = async (
   id: Employee["id"]
 ): Promise<Employee> => {
-  const queryString = `DELETE FROM ${TABLE_NAME} WHERE id = $1 RETURNING *`;
+  const queryString = `DELETE FROM "${TABLE_NAME}" WHERE id = $1 RETURNING *`;
   const values = [id];
   const employee = await pool.query<Employee>(queryString, values);
-  if (employee.rows.length === 0) throw new QueryError("Not deleted");
+  if (employee.rows.length === 0) throw new QueryError(["No rows returned"]);
   return employee.rows[0];
 };

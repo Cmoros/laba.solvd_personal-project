@@ -27,7 +27,7 @@ export const protect = async (
     const user = verifyToken(token, process.env.JWT_SECRET_KEY!);
     const userFromDB = await getUserById(user.id);
     if (!userFromDB || userFromDB.username !== user.username) {
-      throw new AuthError("User not found");
+      throw new AuthError(["User not found"]);
     }
 
     req.user = userFromDB;
@@ -51,7 +51,7 @@ export const loginHandler = async (
   try {
     const { username, password } = user;
     if (!checkIsUserUsername(username) || !checkIsUserPassword(password)) {
-      throw new AuthError("No user or password found");
+      throw new AuthError(["No user or password found"]);
     }
     const token: string = await authenticate(username, password);
     res.json({ success: true, data: { token } });

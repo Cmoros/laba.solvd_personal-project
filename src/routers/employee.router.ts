@@ -43,15 +43,27 @@ employeesRouter.post(
   postEmployee
 );
 
-employeesRouter.put("/:id", idParamValidation, validateFullBody, putEmployee);
+employeesRouter.put(
+  "/:id",
+  idParamValidation,
+  validateFullBody,
+  respondValidationError,
+  putEmployee
+);
 
 employeesRouter.patch(
   "/:id",
   idParamValidation,
   validatePartialBody,
+  respondValidationError,
   patchEmployee
 );
 
-employeesRouter.delete("/:id", idParamValidation, deleteEmployee);
+employeesRouter.delete(
+  "/:id",
+  idParamValidation,
+  respondValidationError,
+  deleteEmployee
+);
 
 export default employeesRouter;

@@ -3,6 +3,8 @@
 import { body, param, query } from "express-validator";
 import { Schema } from "../types/utils";
 
+// FIXME fix this any types and the eslint-disable
+
 export const queryParamsValidation = <T extends object>(schema: Schema<T>) =>
   Object.entries(schema).map(([key, value]) => {
     const { type } = value as any;

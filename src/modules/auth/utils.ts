@@ -11,11 +11,11 @@ const SALT = 10;
 
 export const getTokenFromHeaders = (bearer: string | undefined) => {
   if (!bearer) {
-    throw new AuthError("No token found");
+    throw new AuthError(["No token found"]);
   }
   const [, token] = bearer.split(" ");
   if (!token) {
-    throw new AuthError("Invalid token");
+    throw new AuthError(["Invalid token"]);
   }
   return token;
 };
@@ -77,16 +77,16 @@ export const verifyToken = (token: string, secret: string): JWTData<User> => {
   const expectedSignature = createSignature(header64, data64, secret);
 
   if (signature64 !== expectedSignature)
-    throw new AuthError("Not matching signatures");
+    throw new AuthError(["Not matching signatures"]);
   const userStr = Buffer.from(data64, "base64").toString();
   const payload: unknown = JSON.parse(userStr);
   if (!checkIsJWTPayload<JWTData<User>>(payload))
-    throw new AuthError("Unexpected Signature");
+    throw new AuthError(["Unexpected Signature"]);
   const { username, id, exp } = payload;
   if (!checkIsUserUsername(username) || !checkIsUserId(id))
-    throw new AuthError("Unexpected Signature");
+    throw new AuthError(["Unexpected Signature"]);
   const expDate = new Date(exp);
-  if (new Date() > expDate) throw new AuthError("Expired token");
+  if (new Date() > expDate) throw new AuthError(["Expired token"]);
   return { username, id };
 };
 
@@ -96,7 +96,7 @@ export const authenticate = async (
 ): Promise<string> => {
   const user = await getUserByUsername(username);
   if (!user || !(await comparePassword(password, user.password)))
-    throw new AuthError("Wrong user or password");
+    throw new AuthError(["Wrong user or password"]);
 
   const token = generateToken(
     { id: user.id, username: user.username },

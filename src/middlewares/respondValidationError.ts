@@ -1,19 +1,15 @@
 import { validationResult } from "express-validator";
 import { Response, NextFunction, RequestHandler, Request } from "express";
+import ValidationError from "../modules/ValidationError";
 
 export const respondValidationError: RequestHandler = (
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    res
-      .status(400)
-      .json({
-        success: false,
-        errors: errors.array().map(({ msg }) => msg as string),
-      });
+    next(new ValidationError(errors.array().map((e) => e.msg as string)));
     return;
   }
   next();

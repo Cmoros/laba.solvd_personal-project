@@ -1,5 +1,8 @@
 # Data Modeling
 
+<!-- TODO Add New Table Traffic that contains An Schedule (from 1 hour to 1 hour later, from a Station to a neighbor Station), and what is people flow in this time zone. Maybe create another table just for LineTraffic from 1 hour to 1 hour, that is the sum of all the people flow which trains departed in this time zone. For Example, A - B at 10 am to 11 am, is going to have 300 people flow, and B-C at 10 am to 11 am is going to have 200 people flow. The total people flow in the line is going to be A-B + B-C, 500 people flow in total, so Line from A-C at 10am to 11 am is going to be 500 people. With this number is gonna calculate how many trains to send in this time. In case each train has 6 cars and each car can have 60 people, 360 people for each train. Total capacity must exceed people flow so it makes sense to send 2 trains that can hold 720 people will resolve the problem. This is a simple resolution, without taking into account how many people go out of the train (it assumes that [people that come in] - [people that comes out] = [people flow]), also not taking into account trains that departure just before 10 am but get to final station in time-zone. It is just a simplification of the problem -->
+<!-- TODO Add User Table with some kind of connection to Employee Table. Maybe user has a column that points to employee or viceversa. I think it makes more sense to have a pointer from User (where you login) to Employee, and maybe do a join with it's employee id. If not, it would be needed to have an index in employee user id, to reach it faster and cheaper -->
+
 ## Table of Contents
 
 - [Data Modeling](#data-modeling)

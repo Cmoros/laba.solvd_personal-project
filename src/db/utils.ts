@@ -7,11 +7,11 @@ export const getUpdateQuery = <T extends DBRow>(
   toUpdate: T,
   id: number
 ) => {
-  let queryString = `UPDATE ${tableName} SET `;
+  let queryString = `UPDATE "${tableName}" SET `;
   const values: (string | number | null)[] = [];
   for (const key in toUpdate) {
     if (key.toLowerCase() === "id") continue;
-    queryString += `${key} = $${values.length + 1}, `;
+    queryString += `"${key}" = $${values.length + 1}, `;
     values.push(toUpdate[key as keyof T] ?? null);
   }
   queryString = queryString.slice(0, -2);
@@ -35,9 +35,9 @@ export const getCreateQuery = <T extends DBRow>(
   tableName: string,
   toCreate: T
 ) => {
-  let initialQueryString = `INSERT INTO ${tableName} (`;
+  let initialQueryString = `INSERT INTO "${tableName}" (`;
   for (const key in toCreate) {
-    initialQueryString += `${key}, `;
+    initialQueryString += `"${key}", `;
   }
   initialQueryString = initialQueryString.slice(0, -2);
   const { valuesString, values } = getValuesQuery(toCreate);
@@ -53,9 +53,9 @@ export const getCreateManyQuery = <T extends DBRow>(
   tableName: string,
   toCreate: T[]
 ) => {
-  let initialQueryString = `INSERT INTO ${tableName} (`;
+  let initialQueryString = `INSERT INTO "${tableName}" (`;
   for (const key in toCreate[0]) {
-    initialQueryString += `${key}, `;
+    initialQueryString += `"${key}", `;
   }
   initialQueryString = initialQueryString.slice(0, -2);
   let valuesString = "";
@@ -82,10 +82,10 @@ export const getSearchQuery = <T extends DBRow>(
   tableName: string,
   query: T
 ) => {
-  let queryString = `SELECT * FROM ${tableName} WHERE `;
+  let queryString = `SELECT * FROM "${tableName}" WHERE `;
   const values: (string | number | null)[] = [];
   for (const key in query) {
-    queryString += `${key} = $${values.length + 1} AND `;
+    queryString += `"${key}" = $${values.length + 1} AND `;
     values.push(query[key as keyof T] ?? null);
   }
   queryString = queryString.slice(0, -5);
