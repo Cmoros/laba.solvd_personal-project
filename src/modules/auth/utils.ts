@@ -62,11 +62,11 @@ const getNewExpTime = (date = new Date()): number =>
   date.getTime() + TIME_TO_EXPIRE;
 
 export const generateToken = (
-  payload: JWTData<User>,
+  { userId, username }: JWTData<User>,
   secret: string
 ): string => {
   const header64 = toBase64({ typ: "JWT", alg: "HS256" });
-  const data64 = toBase64({ ...payload, exp: getNewExpTime() });
+  const data64 = toBase64({ userId, username, exp: getNewExpTime() });
   const signature = createSignature(header64, data64, secret);
   return `${header64}.${data64}.${signature}`;
 };
@@ -82,12 +82,12 @@ export const verifyToken = (token: string, secret: string): JWTData<User> => {
   const payload: unknown = JSON.parse(userStr);
   if (!checkIsJWTPayload<JWTData<User>>(payload))
     throw new AuthError(["Unexpected Signature"]);
-  const { username, id, exp } = payload;
-  if (!checkIsUserUsername(username) || !checkIsUserId(id))
+  const { username, userId, exp } = payload;
+  if (!checkIsUserUsername(username) || !checkIsUserId(userId))
     throw new AuthError(["Unexpected Signature"]);
   const expDate = new Date(exp);
   if (new Date() > expDate) throw new AuthError(["Expired token"]);
-  return { username, id };
+  return { username, userId };
 };
 
 export const authenticate = async (
@@ -97,9 +97,9 @@ export const authenticate = async (
   const user = await getUserByUsername(username);
   if (!user || !(await comparePassword(password, user.password)))
     throw new AuthError(["Wrong user or password"]);
-
+  const { userId } = user;
   const token = generateToken(
-    { id: user.id, username: user.username },
+    { userId, username },
     process.env.JWT_SECRET_KEY!
   );
   return token;

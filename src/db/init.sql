@@ -21,36 +21,36 @@ CREATE DATABASE "laba.solvd_metro";
  * LINE *
  ********/
 CREATE TABLE IF NOT EXISTS "Line" (
-	id serial4 NOT NULL,
+	"lineId" serial4 NOT NULL,
 	"name" text NULL,
-	CONSTRAINT "Line_pkey" PRIMARY KEY (id)
+	CONSTRAINT "Line_pkey" PRIMARY KEY ("lineId")
 );
 
 /*********
  * TRAIN *
  *********/
 CREATE TABLE IF NOT EXISTS "Train" (
-	id serial4 NOT NULL,
+	"trainId" serial4 NOT NULL,
 	model text NULL,
 	"totalCars" int2 NOT NULL,
 	"capacityPerCar" int2 NOT NULL,
 	"lineId" int4 NOT NULL,
-	CONSTRAINT train_pkey PRIMARY KEY (id),
-	CONSTRAINT train_line FOREIGN KEY ("lineId") REFERENCES "Line"(id)
+	CONSTRAINT train_pkey PRIMARY KEY ("trainId"),
+	CONSTRAINT train_line FOREIGN KEY ("lineId") REFERENCES "Line"("lineId")
 );
 
 /***********
  * STATION *
  ***********/
 CREATE TABLE IF NOT EXISTS "Station" (
-	id serial4 NOT NULL,
+	"stationId" serial4 NOT NULL,
 	"name" text NOT NULL,
 	"location" text NULL,
 	"lineId" int4 NOT NULL,
 	"number" int2 NOT NULL,
 	capacity int2 NULL,
-	CONSTRAINT "Station_pkey" PRIMARY KEY (id),
-	CONSTRAINT "Station_lineId_fkey" FOREIGN KEY ("lineId") REFERENCES "Line"(id)
+	CONSTRAINT "Station_pkey" PRIMARY KEY ("stationId"),
+	CONSTRAINT "Station_lineId_fkey" FOREIGN KEY ("lineId") REFERENCES "Line"("lineId")
 );
 
 
@@ -58,14 +58,14 @@ CREATE TABLE IF NOT EXISTS "Station" (
  * SCHEDULE *
  ************/
 CREATE TABLE IF NOT EXISTS "Schedule" (
-	id serial4 NOT NULL,
+	"scheduleId" serial4 NOT NULL,
 	"startTime" timetz NOT NULL,
 	"endTime" timetz NOT NULL,
 	"startStationId" int4 NULL,
 	"endStationId" int4 NULL,
-	CONSTRAINT "Schedule_pkey" PRIMARY KEY (id),
-	CONSTRAINT "Schedule_endStationId_fkey" FOREIGN KEY ("endStationId") REFERENCES "Station"(id),
-	CONSTRAINT "Schedule_startStationId_fkey" FOREIGN KEY ("startStationId") REFERENCES "Station"(id)
+	CONSTRAINT "Schedule_pkey" PRIMARY KEY ("scheduleId"),
+	CONSTRAINT "Schedule_endStationId_fkey" FOREIGN KEY ("endStationId") REFERENCES "Station"("stationId"),
+	CONSTRAINT "Schedule_startStationId_fkey" FOREIGN KEY ("startStationId") REFERENCES "Station"("stationId")
 );
 
 
@@ -73,10 +73,10 @@ CREATE TABLE IF NOT EXISTS "Schedule" (
  * EMPLOYEE *
  ************/
 CREATE TABLE IF NOT EXISTS "Employee" (
-	id serial4 NOT NULL,
+	"employeeId" serial4 NOT NULL,
 	"name" text NOT NULL,
 	"position" text NULL,
-	CONSTRAINT "Employee_pkey" PRIMARY KEY (id)
+	CONSTRAINT "Employee_pkey" PRIMARY KEY ("employeeId")
 );
 
 
@@ -84,17 +84,17 @@ CREATE TABLE IF NOT EXISTS "Employee" (
  * CYCLE *
  *********/
 CREATE TABLE IF NOT EXISTS "Cycle" (
-	id serial4 NOT NULL,
+	"cycleId" serial4 NOT NULL,
 	"lineId" int4 NOT NULL,
 	"trainId" int4 NOT NULL,
 	"totalFlow" int4 NOT NULL,
 	"driverId" int4 NOT NULL,
 	"scheduleId" int4 NOT NULL,
-	CONSTRAINT "Cycle_pkey" PRIMARY KEY (id),
-	CONSTRAINT "Cycle_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "Employee"(id),
-	CONSTRAINT "Cycle_lineId_fkey" FOREIGN KEY ("lineId") REFERENCES "Line"(id),
-	CONSTRAINT "Cycle_scheduleId_fkey" FOREIGN KEY ("scheduleId") REFERENCES "Schedule"(id),
-	CONSTRAINT "Cycle_trainId_fkey" FOREIGN KEY ("trainId") REFERENCES "Train"(id)
+	CONSTRAINT "Cycle_pkey" PRIMARY KEY ("cycleId"),
+	CONSTRAINT "Cycle_driverId_fkey" FOREIGN KEY ("driverId") REFERENCES "Employee"("employeeId"),
+	CONSTRAINT "Cycle_lineId_fkey" FOREIGN KEY ("lineId") REFERENCES "Line"("lineId"),
+	CONSTRAINT "Cycle_scheduleId_fkey" FOREIGN KEY ("scheduleId") REFERENCES "Schedule"("scheduleId"),
+	CONSTRAINT "Cycle_trainId_fkey" FOREIGN KEY ("trainId") REFERENCES "Train"("trainId")
 );
 
 
@@ -102,15 +102,28 @@ CREATE TABLE IF NOT EXISTS "Cycle" (
  * ROUTE SEGMENT *
  *****************/
 CREATE TABLE IF NOT EXISTS "RouteSegment" (
-	id serial4 NOT NULL,
+	"routeSegmentId" serial4 NOT NULL,
 	"peopleFlow" int2 NOT NULL,
 	"cycleId" int4 NOT NULL,
 	"scheduleId" int4 NOT NULL,
-	CONSTRAINT "RouteSegment_pkey" PRIMARY KEY (id),
-	CONSTRAINT "RouteSegment_cycleId_fkey" FOREIGN KEY ("cycleId") REFERENCES "Cycle"(id),
-	CONSTRAINT "RouteSegment_scheduleId_fkey" FOREIGN KEY ("scheduleId") REFERENCES "Schedule"(id)
+	CONSTRAINT "RouteSegment_pkey" PRIMARY KEY ("routeSegmentId"),
+	CONSTRAINT "RouteSegment_cycleId_fkey" FOREIGN KEY ("cycleId") REFERENCES "Cycle"("cycleId"),
+	CONSTRAINT "RouteSegment_scheduleId_fkey" FOREIGN KEY ("scheduleId") REFERENCES "Schedule"("scheduleId")
 );
 
+
+/*****************
+ * USER *
+ *****************/
+CREATE TABLE IF NOT EXISTS "User" (
+	"userId" serial4 NOT NULL,
+	"username" text NOT NULL,
+	"password" text NOT NULL,
+	"email" text NULL,
+	"employeeId" int4 NOT NULL,
+	CONSTRAINT "User_pkey" PRIMARY KEY ("userId"),
+	CONSTRAINT "User_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "Employee"("employeeId")
+);
 
 /*
 CREATE TABLE [ IF NOT EXISTS ] [{schema}.]{table_name} ( --public

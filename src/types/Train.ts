@@ -1,14 +1,18 @@
 import Model from "./Model";
 import { Schema, StringifiedKeys } from "./utils";
 
-export default interface Train extends Model {
-  model: string;
+export type TrainTableName = "Train";
+
+export const TRAIN_TABLE_NAME: TrainTableName = "Train";
+
+export default interface Train extends Model<TrainTableName> {
+  model?: string | null;
   lineId: number;
   totalCars: number;
   capacityPerCar: number;
 }
 
-export type NewTrain = Omit<Train, "id">;
+export type NewTrain = Omit<Train, `${Uncapitalize<TrainTableName>}Id`>;
 
 export type StringifiedTrain = StringifiedKeys<Train>;
 
@@ -21,7 +25,7 @@ export const newTrainSchema: Schema<NewTrain> = {
   capacityPerCar: { type: "number", required: true },
 };
 
-export const lineSchema: Schema<Train> = {
+export const trainSchema: Schema<Train> = {
   ...newTrainSchema,
-  id: { type: "number", required: true },
+  trainId: { type: "number", required: true },
 };

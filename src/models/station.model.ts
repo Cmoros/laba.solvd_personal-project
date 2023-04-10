@@ -1,12 +1,16 @@
 import pool from "../db/pool";
 import { getCreateQuery, getSearchQuery, getUpdateQuery } from "../db/utils";
 import QueryError from "../modules/QueryError";
+import { ModelId, getModelId } from "../types/Model";
 import Station, {
   NewStation,
   QueryStation,
+  StationTableName,
   newStationSchema,
 } from "../types/Station";
 import { getAllFields } from "../types/utils";
+
+// TODO Old unused code, delete later
 
 const TABLE_NAME = "Station";
 
@@ -23,8 +27,12 @@ export const getStationsByQuery = async (
   return stations.rows;
 };
 
-export const getStationById = async (id: Station["id"]): Promise<Station> => {
-  const { queryString, values } = getSearchQuery(TABLE_NAME, { id });
+export const getStationById = async (
+  id: Station[ModelId<StationTableName>]
+): Promise<Station> => {
+  const { queryString, values } = getSearchQuery(TABLE_NAME, {
+    [`${getModelId(TABLE_NAME)}`]: id,
+  });
   const station = await pool.query<Station>(queryString, values);
   if (station.rows.length === 0) throw new QueryError(["No rows returned"]);
 
@@ -42,7 +50,7 @@ export const createStation = async (
 };
 
 export const replaceStationById = async (
-  id: Station["id"],
+  id: Station[ModelId<StationTableName>],
   updatedStation: NewStation
 ): Promise<Station> => {
   const stationWithAllFields = getAllFields(updatedStation, newStationSchema);
@@ -57,7 +65,7 @@ export const replaceStationById = async (
 };
 
 export const patchStationById = async (
-  id: Station["id"],
+  id: Station[ModelId<StationTableName>],
   updatedStation: Partial<NewStation>
 ): Promise<Station> => {
   const { queryString, values } = getUpdateQuery(
@@ -72,7 +80,7 @@ export const patchStationById = async (
 };
 
 export const deleteStationById = async (
-  id: Station["id"]
+  id: Station[ModelId<StationTableName>]
 ): Promise<Station> => {
   const queryString = `DELETE FROM "${TABLE_NAME}" WHERE id = $1 RETURNING *`;
   const values = [id];

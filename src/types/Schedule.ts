@@ -1,14 +1,21 @@
 import Model from "./Model";
 import { Schema, StringifiedKeys } from "./utils";
 
-export default interface Schedule extends Model {
+export type ScheduleTableName = "Schedule";
+
+export const SCHEDULE_TABLE_NAME: ScheduleTableName = "Schedule";
+
+export default interface Schedule extends Model<ScheduleTableName> {
   startTime: string;
   endTime: string;
   startStationId: number;
   endStationId: number;
 }
 
-export type NewSchedule = Omit<Schedule, "id">;
+export type NewSchedule = Omit<
+  Schedule,
+  `${Uncapitalize<ScheduleTableName>}Id`
+>;
 
 export type StringifiedSchedule = StringifiedKeys<Schedule>;
 
@@ -21,7 +28,7 @@ export const newScheduleSchema: Schema<NewSchedule> = {
   endStationId: { type: "number", required: true },
 };
 
-export const lineSchema: Schema<Schedule> = {
+export const scheduleSchema: Schema<Schedule> = {
   ...newScheduleSchema,
-  id: { type: "number", required: true },
+  scheduleId: { type: "number", required: true },
 };

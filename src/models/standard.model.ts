@@ -6,113 +6,128 @@ import {
   getUpdateQuery,
 } from "../db/utils";
 import QueryError from "../modules/QueryError";
-import Model from "../types/Model";
+import Model, { ModelId, getModelId } from "../types/Model";
 import { Schema, StringifiedKeys, getAllFields } from "../types/utils";
+import { capitalize } from "../utils";
 
-type StandardModel<T extends Model, Z extends string> = {
-  [key in `getAll${Z}s`]: () => Promise<T[]>;
+type StandardModel<T extends string, M extends Model<T>> = {
+  [key in `getAll${Capitalize<T>}s`]: () => Promise<M[]>;
 } & {
-  [key in `get${Z}sByQuery`]: (
-    query: Partial<T> | StringifiedKeys<Partial<T>>
-  ) => Promise<T[]>;
+  [key in `get${Capitalize<T>}sByQuery`]: (
+    query: Partial<M> | StringifiedKeys<Partial<M>>
+  ) => Promise<M[]>;
 } & {
-  [key in `get${Z}ById`]: (id: T["id"]) => Promise<T>;
+  [key in `get${Capitalize<T>}ById`]: (id: M[ModelId<T>]) => Promise<M>;
 } & {
-  [key in `create${Z}`]: (newItem: Omit<T, "id">) => Promise<T>;
+  [key in `create${Capitalize<T>}`]: (
+    newItem: Omit<M, ModelId<T>>
+  ) => Promise<M>;
 } & {
-  [key in `create${Z}s`]: (newItems: Omit<T, "id">[]) => Promise<T[]>;
+  [key in `create${Capitalize<T>}s`]: (
+    newItems: Omit<M, ModelId<T>>[]
+  ) => Promise<M[]>;
 } & {
-  [key in `replace${Z}ById`]: (
-    id: T["id"],
-    updatedItem: Omit<T, "id">
-  ) => Promise<T>;
+  [key in `replace${Capitalize<T>}ById`]: (
+    id: M[ModelId<T>],
+    updatedItem: Omit<M, ModelId<T>>
+  ) => Promise<M>;
 } & {
-  [key in `patch${Z}ById`]: (
-    id: T["id"],
-    updatedItem: Partial<Omit<T, "id">>
-  ) => Promise<T>;
+  [key in `patch${Capitalize<T>}ById`]: (
+    id: M[ModelId<T>],
+    updatedItem: Partial<Omit<M, ModelId<T>>>
+  ) => Promise<M>;
 } & {
-  [key in `delete${Z}ById`]: (id: T["id"]) => Promise<T>;
+  [key in `delete${Capitalize<T>}ById`]: (id: M[ModelId<T>]) => Promise<M>;
 };
 
-const createStandardModel = <T extends Model, Z extends string>(
-  tableName: Z,
-  newItemSchema: Schema<Omit<T, "id">>
-): StandardModel<T, Z> => {
+const createStandardModel = <T extends string, M extends Model<T>>(
+  tableName: T,
+  newItemSchema: Schema<Omit<M, ModelId<T>>>
+): StandardModel<T, M> => {
   return {
-    async [`getAll${tableName}s`](): Promise<T[]> {
-      const items = await pool.query<T>(`SELECT * FROM "${tableName}"`);
+    async [`getAll${capitalize(tableName)}s`](): Promise<M[]> {
+      const items = await pool.query<M>(`SELECT * FROM "${tableName}"`);
       return items.rows;
     },
 
-    async [`get${tableName}sByQuery`](
-      query: Partial<T> | StringifiedKeys<Partial<T>>
-    ): Promise<T[]> {
+    async [`get${capitalize(tableName)}sByQuery`](
+      query: Partial<M> | StringifiedKeys<Partial<M>>
+    ): Promise<M[]> {
       const { queryString, values } = getSearchQuery(tableName, query);
-      const items = await pool.query<T>(queryString, values);
+      const items = await pool.query<M>(queryString, values);
       return items.rows;
     },
 
-    async [`get${tableName}ById`](id: T["id"]): Promise<T> {
-      const { queryString, values } = getSearchQuery(tableName, { id });
-      const item = await pool.query<T>(queryString, values);
+    async [`get${capitalize(tableName)}ById`](id: M[ModelId<T>]): Promise<M> {
+      const { queryString, values } = getSearchQuery(tableName, {
+        [getModelId(tableName)]: id,
+      } as Partial<M>);
+      const item = await pool.query<M>(queryString, values);
       if (item.rows.length === 0) throw new QueryError(["No rows returned"]);
       return item.rows[0];
     },
 
-    async [`create${tableName}`](newItem: Omit<T, "id">): Promise<T> {
+    async [`create${capitalize(tableName)}`](
+      newItem: Omit<M, "id">
+    ): Promise<M> {
       const { queryString, values } = getCreateQuery(tableName, newItem);
-      const item = await pool.query<T>(queryString, values);
+      const item = await pool.query<M>(queryString, values);
       if (item.rows.length === 0) throw new QueryError(["No rows returned"]);
       return item.rows[0];
     },
 
-    async [`create${tableName}s`](newItems: Omit<T, "id">[]): Promise<T[]> {
+    async [`create${capitalize(tableName)}s`](
+      newItems: Omit<M, "id">[]
+    ): Promise<M[]> {
       const { queryString, values } = getCreateManyQuery(tableName, newItems);
-      const items = await pool.query<T>(queryString, values);
+      const items = await pool.query<M>(queryString, values);
       if (items.rows.length === 0) throw new QueryError(["No rows returned"]);
       return items.rows;
     },
 
-    async [`replace${tableName}ById`](
-      id: T["id"],
-      updatedItem: Omit<T, "id">
-    ): Promise<T> {
+    async [`replace${capitalize(tableName)}ById`](
+      id: M[ModelId<T>],
+      updatedItem: Omit<M, ModelId<T>>
+    ): Promise<M> {
       const itemWithAllFields = getAllFields(updatedItem, newItemSchema);
       const { queryString, values } = getUpdateQuery(
         tableName,
         itemWithAllFields,
         id
       );
-      const item = await pool.query<T>(queryString, values);
+      const item = await pool.query<M>(queryString, values);
       if (item.rows.length === 0) throw new QueryError(["No rows returned"]);
       return item.rows[0];
     },
 
-    async [`patch${tableName}ById`](
-      id: T["id"],
-      updatedSchedule: Partial<T>
-    ): Promise<T> {
+    async [`patch${capitalize(tableName)}ById`](
+      id: M[ModelId<T>],
+      updatedSchedule: Partial<M>
+    ): Promise<M> {
       const { queryString, values } = getUpdateQuery(
         tableName,
         updatedSchedule,
         id
       );
-      const item = await pool.query<T>(queryString, values);
+      const item = await pool.query<M>(queryString, values);
       if (item.rows.length === 0) throw new QueryError(["No rows returned"]);
 
       return item.rows[0];
     },
 
-    async [`delete${tableName}ById`](id: T["id"]): Promise<T> {
-      const queryString = `DELETE FROM "${tableName}" WHERE id = $1 RETURNING *`;
+    async [`delete${capitalize(tableName)}ById`](
+      id: M[ModelId<T>]
+    ): Promise<M> {
+      const queryString = `DELETE FROM "${tableName}" WHERE "${getModelId(
+        tableName
+      )}" = $1 RETURNING *`;
       const values = [id];
-      const employee = await pool.query<T>(queryString, values);
+      const employee = await pool.query<M>(queryString, values);
       if (employee.rows.length === 0)
         throw new QueryError(["No rows returned"]);
       return employee.rows[0];
     },
-  } as StandardModel<T, Z>;
+  } as StandardModel<T, M>;
 };
 
 export default createStandardModel;

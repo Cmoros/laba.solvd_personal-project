@@ -6,34 +6,35 @@ import {
 } from "../../src/db/utils";
 
 describe("getSearchQuery", () => {
-  it("should return a query string and values with id", () => {
+  it("should return a query string and values with testId", () => {
     const query = {
-      id: 1,
+      testId: 1,
     };
-    const { queryString, values } = getSearchQuery("test", query);
-    expect(queryString).toBe(`SELECT * FROM "test" WHERE "id" = $1`);
+    const { queryString, values } = getSearchQuery("Test", query);
+
+    expect(queryString).toBe(`SELECT * FROM "Test" WHERE "testId" = $1`);
     expect(values).toEqual([1]);
   });
-  it("should return a query string and values with id and name", () => {
+  it("should return a query string and values with testId and name", () => {
     const query = {
-      id: 1,
+      testId: 1,
       name: "test",
     };
-    const { queryString, values } = getSearchQuery("test", query);
+    const { queryString, values } = getSearchQuery("Test", query);
     expect(queryString).toBe(
-      `SELECT * FROM "test" WHERE "id" = $1 AND "name" = $2`
+      `SELECT * FROM "Test" WHERE "testId" = $1 AND "name" = $2`
     );
     expect(values).toEqual([1, "test"]);
   });
-  it("should return a query string and values with id and name and null", () => {
+  it("should return a query string and values with testId and name and null", () => {
     const query = {
-      id: 1,
+      testId: 1,
       name: "test",
       description: null,
     };
-    const { queryString, values } = getSearchQuery("test", query);
+    const { queryString, values } = getSearchQuery("Test", query);
     expect(queryString).toBe(
-      `SELECT * FROM "test" WHERE "id" = $1 AND "name" = $2 AND "description" = $3`
+      `SELECT * FROM "Test" WHERE "testId" = $1 AND "name" = $2 AND "description" = $3`
     );
     expect(values).toEqual([1, "test", null]);
   });
@@ -44,9 +45,9 @@ describe("getCreateQuery", () => {
     const toCreate = {
       name: "test",
     };
-    const { queryString, values } = getCreateQuery("test", toCreate);
+    const { queryString, values } = getCreateQuery("Test", toCreate);
     expect(queryString).toBe(
-      `INSERT INTO "test" ("name") VALUES ($1) RETURNING *`
+      `INSERT INTO "Test" ("name") VALUES ($1) RETURNING *`
     );
     expect(values).toEqual(["test"]);
   });
@@ -55,9 +56,9 @@ describe("getCreateQuery", () => {
       name: "test",
       description: "test",
     };
-    const { queryString, values } = getCreateQuery("test", toCreate);
+    const { queryString, values } = getCreateQuery("Test", toCreate);
     expect(queryString).toBe(
-      `INSERT INTO "test" ("name", "description") VALUES ($1, $2) RETURNING *`
+      `INSERT INTO "Test" ("name", "description") VALUES ($1, $2) RETURNING *`
     );
     expect(values).toEqual(["test", "test"]);
   });
@@ -67,22 +68,22 @@ describe("getCreateQuery", () => {
       number: 1,
       description: null,
     };
-    const { queryString, values } = getCreateQuery("test", toCreate);
+    const { queryString, values } = getCreateQuery("Test", toCreate);
     expect(queryString).toBe(
-      `INSERT INTO "test" ("name", "number", "description") VALUES ($1, $2, $3) RETURNING *`
+      `INSERT INTO "Test" ("name", "number", "description") VALUES ($1, $2, $3) RETURNING *`
     );
     expect(values).toEqual(["test", 1, null]);
   });
-  it("should not consider id in the query", () => {
+  it("should not constestIder testId in the query", () => {
     const toCreate = {
-      id: 1,
+      testId: 1,
       name: "test",
       number: 1,
       description: null,
     };
-    const { queryString, values } = getCreateQuery("test", toCreate);
+    const { queryString, values } = getCreateQuery("Test", toCreate);
     expect(queryString).toBe(
-      `INSERT INTO "test" ("name", "number", "description") VALUES ($1, $2, $3) RETURNING *`
+      `INSERT INTO "Test" ("name", "number", "description") VALUES ($1, $2, $3) RETURNING *`
     );
     expect(values).toEqual(["test", 1, null]);
   });
@@ -93,9 +94,9 @@ describe("getUpdateQuery", () => {
     const toUpdate = {
       name: "test",
     };
-    const { queryString, values } = getUpdateQuery("test", toUpdate, 1);
+    const { queryString, values } = getUpdateQuery("Test", toUpdate, 1);
     expect(queryString).toBe(
-      `UPDATE "test" SET "name" = $1 WHERE "id" = $2 RETURNING *`
+      `UPDATE "Test" SET "name" = $1 WHERE "testId" = $2 RETURNING *`
     );
     expect(values).toEqual(["test", 1]);
   });
@@ -104,9 +105,9 @@ describe("getUpdateQuery", () => {
       name: "test",
       description: "test",
     };
-    const { queryString, values } = getUpdateQuery("test", toUpdate, 1);
+    const { queryString, values } = getUpdateQuery("Test", toUpdate, 1);
     expect(queryString).toBe(
-      `UPDATE "test" SET "name" = $1, "description" = $2 WHERE "id" = $3 RETURNING *`
+      `UPDATE "Test" SET "name" = $1, "description" = $2 WHERE "testId" = $3 RETURNING *`
     );
     expect(values).toEqual(["test", "test", 1]);
   });
@@ -116,22 +117,22 @@ describe("getUpdateQuery", () => {
       number: 1,
       description: null,
     };
-    const { queryString, values } = getUpdateQuery("test", toUpdate, 1);
+    const { queryString, values } = getUpdateQuery("Test", toUpdate, 1);
     expect(queryString).toBe(
-      `UPDATE "test" SET "name" = $1, "number" = $2, "description" = $3 WHERE "id" = $4 RETURNING *`
+      `UPDATE "Test" SET "name" = $1, "number" = $2, "description" = $3 WHERE "testId" = $4 RETURNING *`
     );
     expect(values).toEqual(["test", 1, null, 1]);
   });
-  it("should not consider id in the query", () => {
+  it("should not constestIder testId in the query", () => {
     const toUpdate = {
-      id: 1,
+      testId: 1,
       name: "test",
       number: 1,
       description: null,
     };
-    const { queryString, values } = getUpdateQuery("test", toUpdate, 1);
+    const { queryString, values } = getUpdateQuery("Test", toUpdate, 1);
     expect(queryString).toBe(
-      `UPDATE "test" SET "name" = $1, "number" = $2, "description" = $3 WHERE "id" = $4 RETURNING *`
+      `UPDATE "Test" SET "name" = $1, "number" = $2, "description" = $3 WHERE "testId" = $4 RETURNING *`
     );
     expect(values).toEqual(["test", 1, null, 1]);
   });
@@ -147,9 +148,9 @@ describe(getCreateManyQuery.name, () => {
         name: "test2",
       },
     ];
-    const { queryString, values } = getCreateManyQuery("test", toCreate);
+    const { queryString, values } = getCreateManyQuery("Test", toCreate);
     expect(queryString).toBe(
-      `INSERT INTO "test" ("name") VALUES ($1), ($2) RETURNING *`
+      `INSERT INTO "Test" ("name") VALUES ($1), ($2) RETURNING *`
     );
     expect(values).toEqual(["test", "test2"]);
   });
@@ -165,9 +166,9 @@ describe(getCreateManyQuery.name, () => {
         description: "test2",
       },
     ];
-    const { queryString, values } = getCreateManyQuery("test", toCreate);
+    const { queryString, values } = getCreateManyQuery("Test", toCreate);
     expect(queryString).toBe(
-      `INSERT INTO "test" ("name", "description") VALUES ($1, $2), ($3, $4) RETURNING *`
+      `INSERT INTO "Test" ("name", "description") VALUES ($1, $2), ($3, $4) RETURNING *`
     );
     expect(values).toEqual(["test", "test", "test2", "test2"]);
   });
@@ -184,9 +185,9 @@ describe(getCreateManyQuery.name, () => {
         description: null,
       },
     ];
-    const { queryString, values } = getCreateManyQuery("test", toCreate);
+    const { queryString, values } = getCreateManyQuery("Test", toCreate);
     expect(queryString).toBe(
-      `INSERT INTO "test" ("name", "number", "description") VALUES ($1, $2, $3), ($4, $5, $6) RETURNING *`
+      `INSERT INTO "Test" ("name", "number", "description") VALUES ($1, $2, $3), ($4, $5, $6) RETURNING *`
     );
     expect(values).toEqual(["test", 1, null, "test2", 2, null]);
   });
@@ -199,9 +200,9 @@ describe(getCreateManyQuery.name, () => {
         description: null,
       },
     ];
-    const { queryString, values } = getCreateManyQuery("test", toCreate);
+    const { queryString, values } = getCreateManyQuery("Test", toCreate);
     expect(queryString).toBe(
-      `INSERT INTO "test" ("name", "number", "description") VALUES ($1, $2, $3) RETURNING *`
+      `INSERT INTO "Test" ("name", "number", "description") VALUES ($1, $2, $3) RETURNING *`
     );
     expect(values).toEqual(["test", 1, null]);
   });
@@ -212,9 +213,9 @@ describe(getCreateManyQuery.name, () => {
         name: "test",
       },
     ];
-    const { queryString, values } = getCreateManyQuery("test", toCreate);
+    const { queryString, values } = getCreateManyQuery("Test", toCreate);
     expect(queryString).toBe(
-      `INSERT INTO "test" ("name") VALUES ($1) RETURNING *`
+      `INSERT INTO "Test" ("name") VALUES ($1) RETURNING *`
     );
     expect(values).toEqual(["test"]);
   });
@@ -247,9 +248,9 @@ describe(getCreateManyQuery.name, () => {
         description: null,
       },
     ];
-    const { queryString, values } = getCreateManyQuery("test", toCreate);
+    const { queryString, values } = getCreateManyQuery("Test", toCreate);
     expect(queryString).toBe(
-      `INSERT INTO "test" ("name", "number", "description") VALUES ($1, $2, $3), ($4, $5, $6), ($7, $8, $9), ($10, $11, $12), ($13, $14, $15) RETURNING *`
+      `INSERT INTO "Test" ("name", "number", "description") VALUES ($1, $2, $3), ($4, $5, $6), ($7, $8, $9), ($10, $11, $12), ($13, $14, $15) RETURNING *`
     );
     expect(values).toEqual([
       "test",

@@ -6,8 +6,8 @@ import createStandardModel from "../models/standard.model";
 import { handleQueryError, handleSuccessfulQuery } from "./utils";
 import Model from "../types/Model";
 
-type StandardController<T extends Model, Z extends string> = {
-  [key in `get${Z}s`]: (
+type StandardController<T extends string, M extends Model<T>> = {
+  [key in `get${T}s`]: (
     req: AuthorizedRequest<
       EmptyObject,
       EmptyObject,
@@ -18,41 +18,41 @@ type StandardController<T extends Model, Z extends string> = {
     next: NextFunction
   ) => Promise<void>;
 } & {
-  [key in `get${Z}`]: (
+  [key in `get${T}`]: (
     req: AuthorizedRequest<{ id: string }>,
     res: Response,
     next: NextFunction
   ) => Promise<void>;
 } & {
-  [key in `post${Z}`]: (
-    req: AuthorizedRequest<Record<string, never>, Omit<T, "id">>,
+  [key in `post${T}`]: (
+    req: AuthorizedRequest<Record<string, never>, Omit<M, "id">>,
     res: Response,
     next: NextFunction
   ) => Promise<void>;
 } & {
-  [key in `patch${Z}`]: (
-    req: AuthorizedRequest<{ id: string }, Partial<Omit<T, "id">>>,
+  [key in `patch${T}`]: (
+    req: AuthorizedRequest<{ id: string }, Partial<Omit<M, "id">>>,
     res: Response,
     next: NextFunction
   ) => Promise<void>;
 } & {
-  [key in `put${Z}`]: (
-    req: AuthorizedRequest<{ id: string }, Omit<T, "id">>,
+  [key in `put${T}`]: (
+    req: AuthorizedRequest<{ id: string }, Omit<M, "id">>,
     res: Response,
     next: NextFunction
   ) => Promise<void>;
 } & {
-  [key in `delete${Z}`]: (
+  [key in `delete${T}`]: (
     req: AuthorizedRequest<{ id: string }>,
     res: Response,
     next: NextFunction
   ) => Promise<void>;
 };
 
-const createStandardController = <T extends Model, Z extends string>(
-  tableName: Z,
-  newItemSchema: Schema<Omit<T, "id">>
-): StandardController<T, Z> => {
+const createStandardController = <T extends string, M extends Model<T>>(
+  tableName: T,
+  newItemSchema: Schema<Omit<M, `${Uncapitalize<T>}Id`>>
+): StandardController<T, M> => {
   // eslint-disable-next-line @typescript-eslint/ban-types
   const standardModel: Record<string, Function> = createStandardModel(
     tableName,
@@ -70,7 +70,7 @@ const createStandardController = <T extends Model, Z extends string>(
       next: NextFunction
     ) {
       const { query } = req;
-      let items: T[];
+      let items: M[];
       try {
         if (checkIsEmptyObject(query)) {
           items = await standardModel[`getAll${tableName}s`]();
@@ -100,13 +100,13 @@ const createStandardController = <T extends Model, Z extends string>(
     async [`post${tableName}`](
       req: AuthorizedRequest<
         Record<string, never>,
-        Omit<T, "id"> | Omit<T, "id">[]
+        Omit<M, "id"> | Omit<M, "id">[]
       >,
       res: Response,
       next: NextFunction
     ) {
       const incoming = req.body;
-      let created: T | T[];
+      let created: M | M[];
       try {
         // TODO Add support for creating multiple items (this is not supported by the validation middleware)
         // if (Array.isArray(incoming)) {
@@ -121,7 +121,7 @@ const createStandardController = <T extends Model, Z extends string>(
     },
 
     async [`put${tableName}`](
-      req: AuthorizedRequest<{ id: string }, Partial<Omit<T, "id">>>,
+      req: AuthorizedRequest<{ id: string }, Partial<Omit<M, "id">>>,
       res: Response,
       next: NextFunction
     ) {
@@ -139,7 +139,7 @@ const createStandardController = <T extends Model, Z extends string>(
     },
 
     async [`patch${tableName}`](
-      req: AuthorizedRequest<{ id: string }, Partial<Omit<T, "id">>>,
+      req: AuthorizedRequest<{ id: string }, Partial<Omit<M, "id">>>,
       res: Response,
       next: NextFunction
     ) {
@@ -169,7 +169,7 @@ const createStandardController = <T extends Model, Z extends string>(
         handleQueryError(error, "Not deleted", next);
       }
     },
-  } as StandardController<T, Z>;
+  } as StandardController<T, M>;
 };
 
 export default createStandardController;

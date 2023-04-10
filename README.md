@@ -49,6 +49,8 @@ Laba.Solvd Nodejs Course
       - [`PUT /schedules/:id`](#put-schedulesid)
       - [`PATCH /schedules/:id`](#patch-schedulesid)
       - [`DELETE /schedules/:id`](#delete-schedulesid)
+  - [Testing](#testing)
+    - [Unit Tests](#unit-tests)
 
 ## About
 
@@ -316,9 +318,9 @@ Retrieves a specific employee by ID.
 
 - Route Parameters
 
-  | Parameter | Type   | Required | Description      |
-  | --------- | ------ | -------- | ---------------- |
-  | `id`      | number | Yes      | The employee ID. |
+  | Parameter    | Type   | Required | Description      |
+  | ------------ | ------ | -------- | ---------------- |
+  | `employeeId` | number | Yes      | The employee ID. |
 
 - Response
 
@@ -365,9 +367,9 @@ Replace a specific employee by ID.
 
 - Route Parameters
 
-  | Parameter | Type   | Required | Description      |
-  | --------- | ------ | -------- | ---------------- |
-  | `id`      | number | Yes      | The employee ID. |
+  | Parameter    | Type   | Required | Description      |
+  | ------------ | ------ | -------- | ---------------- |
+  | `employeeId` | number | Yes      | The employee ID. |
 
 - Request Body
 
@@ -397,9 +399,9 @@ Update one or more fields of an employee by ID.
 
 - Route Parameters
 
-  | Parameter | Type   | Required | Description      |
-  | --------- | ------ | -------- | ---------------- |
-  | `id`      | number | Yes      | The employee ID. |
+  | Parameter    | Type   | Required | Description      |
+  | ------------ | ------ | -------- | ---------------- |
+  | `employeeId` | number | Yes      | The employee ID. |
 
 - Request Body
 
@@ -428,9 +430,9 @@ Deletes an employee by ID.
 
 - Route Parameters
 
-  | Parameter | Type   | Required | Description      |
-  | --------- | ------ | -------- | ---------------- |
-  | `id`      | number | Yes      | The employee ID. |
+  | Parameter    | Type   | Required | Description      |
+  | ------------ | ------ | -------- | ---------------- |
+  | `employeeId` | number | Yes      | The employee ID. |
 
 - Response
 
@@ -487,7 +489,7 @@ Retrieves a specific train by ID.
 
   | Parameter | Type   | Required | Description   |
   | --------- | ------ | -------- | ------------- |
-  | `id`      | number | Yes      | The train ID. |
+  | `trainId` | number | Yes      | The train ID. |
 
 - Response
 
@@ -542,7 +544,7 @@ Replace a specific train by ID.
 
   | Parameter | Type   | Required | Description   |
   | --------- | ------ | -------- | ------------- |
-  | `id`      | number | Yes      | The train ID. |
+  | `trainId` | number | Yes      | The train ID. |
 
 - Request Body
 
@@ -578,7 +580,7 @@ Update one or more fields of an train by ID.
 
   | Parameter | Type   | Required | Description   |
   | --------- | ------ | -------- | ------------- |
-  | `id`      | number | Yes      | The train ID. |
+  | `trainId` | number | Yes      | The train ID. |
 
 - Request Body
 
@@ -611,7 +613,7 @@ Deletes an trains by ID.
 
   | Parameter | Type   | Required | Description   |
   | --------- | ------ | -------- | ------------- |
-  | `id`      | number | Yes      | The train ID. |
+  | `trainId` | number | Yes      | The train ID. |
 
 - Response
 
@@ -673,9 +675,9 @@ Retrieves a specific schedule by ID.
 
 - Route Parameters
 
-  | Parameter | Type   | Required | Description      |
-  | --------- | ------ | -------- | ---------------- |
-  | `id`      | number | Yes      | The schedule ID. |
+  | Parameter    | Type   | Required | Description      |
+  | ------------ | ------ | -------- | ---------------- |
+  | `scheduleId` | number | Yes      | The schedule ID. |
 
 - Response
 
@@ -728,9 +730,9 @@ Replace a specific schedule by ID.
 
 - Route Parameters
 
-  | Parameter | Type   | Required | Description      |
-  | --------- | ------ | -------- | ---------------- |
-  | `id`      | number | Yes      | The schedule ID. |
+  | Parameter    | Type   | Required | Description      |
+  | ------------ | ------ | -------- | ---------------- |
+  | `scheduleId` | number | Yes      | The schedule ID. |
 
 - Request Body
 
@@ -764,14 +766,16 @@ Update one or more fields of a schedule record by ID.
 
 - Route Parameters
 
-  | Parameter | Type   | Required | Description      |
-  | --------- | ------ | -------- | ---------------- |
-  | `id`      | number | Yes      | The schedule ID. |
+  | Parameter    | Type   | Required | Description      |
+  | ------------ | ------ | -------- | ---------------- |
+  | `scheduleId` | number | Yes      | The schedule ID. |
 
 - Request Body
 
   ```
   {
+    "startTime": "07:00 AM",
+    "endTime": "07:30 AM"
   }
   ```
 
@@ -796,12 +800,24 @@ Deletes a schedule record by ID.
 
 - Route Parameters
 
-  | Parameter | Type   | Required | Description      |
-  | --------- | ------ | -------- | ---------------- |
-  | `id`      | number | Yes      | The schedule ID. |
+  | Parameter    | Type   | Required | Description      |
+  | ------------ | ------ | -------- | ---------------- |
+  | `scheduleId` | number | Yes      | The schedule ID. |
 
 - Response
 
   No Body
 
 [⬆ Go To Table of contents ⬆](#table-of-contents) ----|---- [⬆ Go To Schedule ⬆](#schedules)
+
+## Testing
+
+### Unit Tests
+
+Unit tests are located in the `__tests__` directory. To run the unit tests, run the following command:
+
+```bash
+$ npm test
+```
+
+At the moment, tests that makes requests to the Postgres database may fail if different suites are ran simultaneously (like `standard.controller.test.ts` and `standard.model.test.ts`). This is because the tests interact with the same table and they add/update/delete rows that may compromise the other tests. By default (with `npm test`) are run with `--runInBand` flag. Also, they're ran with `--coverage` flag.

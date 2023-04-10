@@ -1,6 +1,8 @@
 import pool from "../db/pool";
 import { getCreateQuery, getSearchQuery, getUpdateQuery } from "../db/utils";
 import QueryError from "../modules/QueryError";
+import { SCHEDULE_TABLE_NAME, ScheduleTableName } from "../types/Schedule";
+import { ModelId, getModelId } from "../types/Model";
 import Schedule, {
   NewSchedule,
   QuerySchedule,
@@ -8,25 +10,29 @@ import Schedule, {
 } from "../types/Schedule";
 import { getAllFields } from "../types/utils";
 
-const TABLE_NAME = "Schedule";
+// TODO Old unused code, delete later
 
 export const getAllSchedules = async (): Promise<Schedule[]> => {
-  const shcedules = await pool.query<Schedule>(`SELECT * FROM "${TABLE_NAME}"`);
+  const shcedules = await pool.query<Schedule>(
+    `SELECT * FROM "${SCHEDULE_TABLE_NAME}"`
+  );
   return shcedules.rows;
 };
 
 export const getSchedulesByQuery = async (
   query: QuerySchedule
 ): Promise<Schedule[]> => {
-  const { queryString, values } = getSearchQuery(TABLE_NAME, query);
+  const { queryString, values } = getSearchQuery(SCHEDULE_TABLE_NAME, query);
   const shcedules = await pool.query<Schedule>(queryString, values);
   return shcedules.rows;
 };
 
 export const getScheduleById = async (
-  id: Schedule["id"]
+  id: Schedule[ModelId<ScheduleTableName>]
 ): Promise<Schedule> => {
-  const { queryString, values } = getSearchQuery(TABLE_NAME, { id });
+  const { queryString, values } = getSearchQuery(SCHEDULE_TABLE_NAME, {
+    [`${getModelId(SCHEDULE_TABLE_NAME)}`]: id,
+  });
   const shcedule = await pool.query<Schedule>(queryString, values);
   if (shcedule.rows.length === 0) throw new QueryError(["No rows returned"]);
 
@@ -36,7 +42,10 @@ export const getScheduleById = async (
 export const createSchedule = async (
   newSchedule: NewSchedule
 ): Promise<Schedule> => {
-  const { queryString, values } = getCreateQuery(TABLE_NAME, newSchedule);
+  const { queryString, values } = getCreateQuery(
+    SCHEDULE_TABLE_NAME,
+    newSchedule
+  );
   const shcedule = await pool.query<Schedule>(queryString, values);
   if (shcedule.rows.length === 0) throw new QueryError(["No rows returned"]);
 
@@ -44,7 +53,7 @@ export const createSchedule = async (
 };
 
 export const replaceScheduleById = async (
-  id: Schedule["id"],
+  id: Schedule[ModelId<ScheduleTableName>],
   updatedSchedule: NewSchedule
 ): Promise<Schedule> => {
   const shceduleWithAllFields = getAllFields(
@@ -52,7 +61,7 @@ export const replaceScheduleById = async (
     newScheduleSchema
   );
   const { queryString, values } = getUpdateQuery(
-    TABLE_NAME,
+    SCHEDULE_TABLE_NAME,
     shceduleWithAllFields,
     id
   );
@@ -62,11 +71,11 @@ export const replaceScheduleById = async (
 };
 
 export const patchScheduleById = async (
-  id: Schedule["id"],
+  id: Schedule[ModelId<ScheduleTableName>],
   updatedSchedule: Partial<NewSchedule>
 ): Promise<Schedule> => {
   const { queryString, values } = getUpdateQuery(
-    TABLE_NAME,
+    SCHEDULE_TABLE_NAME,
     updatedSchedule,
     id
   );
@@ -77,9 +86,9 @@ export const patchScheduleById = async (
 };
 
 export const deleteScheduleById = async (
-  id: Schedule["id"]
+  id: Schedule[ModelId<ScheduleTableName>]
 ): Promise<Schedule> => {
-  const queryString = `DELETE FROM "${TABLE_NAME}" WHERE id = $1 RETURNING *`;
+  const queryString = `DELETE FROM "${SCHEDULE_TABLE_NAME}" WHERE id = $1 RETURNING *`;
   const values = [id];
   const employee = await pool.query<Schedule>(queryString, values);
   if (employee.rows.length === 0) throw new QueryError(["No rows returned"]);

@@ -1,15 +1,19 @@
-import Model from "./Model";
+import Model, { ModelId } from "./Model";
 import { Schema, StringifiedKeys } from "./utils";
 
-export default interface Station extends Model {
+export type StationTableName = "Station";
+
+export const STATION_TABLE_NAME: StationTableName = "Station";
+
+export default interface Station extends Model<StationTableName> {
   name: string;
-  location: string;
+  location?: string | null;
   lineId: number;
   number: number;
   capacity: number;
 }
 
-export type NewStation = Omit<Station, "id">;
+export type NewStation = Omit<Station, ModelId<StationTableName>>;
 
 export type StringifiedStation = StringifiedKeys<Station>;
 
@@ -23,7 +27,7 @@ export const newStationSchema: Schema<NewStation> = {
   capacity: { type: "number", required: false },
 };
 
-export const lineSchema: Schema<Station> = {
+export const stationSchema: Schema<Station> = {
   ...newStationSchema,
-  id: { type: "number", required: true },
+  stationId: { type: "number", required: true },
 };

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
+/*
 import express from "express";
 import {
   getEmployees,
@@ -15,9 +16,12 @@ import {
   queryParamsValidation,
 } from "../middlewares/schemaValidation";
 import { respondValidationError } from "../middlewares/respondValidationError";
+*/
 import { newEmployeeSchema } from "../types/Employee";
 import createStandardRouter from "./standard.router";
 
+// TODO Old unused code, remove later
+/*
 const oldEmployeesRouter = express.Router();
 const validateFullBody = fullBodyValidation(newEmployeeSchema);
 const validatePartialBody = partialBodyValidation(newEmployeeSchema);
@@ -66,7 +70,7 @@ oldEmployeesRouter.delete(
   respondValidationError,
   deleteEmployee
 );
-
+*/
 const employeesRouter = createStandardRouter("Employee", newEmployeeSchema);
 
 export default employeesRouter;

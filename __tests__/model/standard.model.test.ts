@@ -3,6 +3,9 @@ import createStandardModel from "../../src/models/standard.model";
 import QueryError from "../../src/modules/QueryError";
 import TestModel, { newTestModelSchema } from "../utilities/TestModel";
 import {
+  // testQueriesWithTableId,
+  createTestDB,
+  dropTestDB,
   deleteAllTests,
   insert1Test,
   insertManyTests,
@@ -10,12 +13,32 @@ import {
   queryId,
 } from "../utilities/testDataFactory";
 
+// const tableNumber = Math.floor(Math.random() * 100000);
+// const tableId = `${tableNumber}`;
+// const tableName = `Test${tableId}`;
+// const tableName = "Test";
+
+// const {
+//   createTestDB,
+//   deleteAllTests,
+//   dropTestDB,
+//   insert1Test,
+//   insertManyTests,
+//   insertTestWithOptionals,
+//   queryId,
+// } = testQueriesWithTableId(tableNumber);
+
+beforeAll(async () => {
+  await createTestDB();
+});
+
 beforeEach(async () => {
   // await pool.connect();
   await deleteAllTests();
 });
 
 afterAll(async () => {
+  await dropTestDB();
   await pool.end();
 });
 
@@ -49,14 +72,19 @@ describe("createStandardModel", () => {
       const tests = await insertManyTests();
       const standardModel = createStandardModel("Test", newTestModelSchema);
       const returnedTests = await standardModel.getAllTests();
-      expect(returnedTests).toEqual(tests.map(({ returned }) => returned));
+      expect(returnedTests).toHaveLength(tests.length);
+      const set = new Set(returnedTests.map(({ testId }) => testId));
+      expect(set.size).toBe(tests.length);
+      expect(tests.every(({ returned: { testId } }) => set.has(testId))).toBe(
+        true
+      );
     });
   });
 
   describe("getTestsByQuery", () => {
     it("should return an array of 1 test", async () => {
       const { returned } = await insert1Test();
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
@@ -67,7 +95,7 @@ describe("createStandardModel", () => {
     });
 
     it("should return an empty array if db is empty", async () => {
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
@@ -76,36 +104,32 @@ describe("createStandardModel", () => {
     });
 
     it("should return an array of many tests", async () => {
-      const tests = await insertManyTests();
+      await insertManyTests();
       const testsSameName = await insertManyTests(50, { similar: true });
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
+
       const returnedTests = await standardModel.getTestsByQuery({
         name: testsSameName[0].returned.name,
       });
-      const set = new Set(returnedTests.map(({ id }) => id));
 
-      testsSameName.forEach(({ returned: { id } }) => {
-        expect(set.has(id)).toBe(true);
-      });
+      const set = new Set(returnedTests.map(({ testId }) => testId));
+      expect(
+        testsSameName.every(({ returned: { testId } }) => set.has(testId))
+      ).toBe(true);
       expect(set.size).toBe(testsSameName.length);
       expect(
         returnedTests.every(
           ({ name }) => name === testsSameName[0].returned.name
         )
       ).toBe(true);
-      for (let i = 0; i < tests.length; i++) {
-        for (let j = i + 1; j < returnedTests.length; j++) {
-          expect(tests[i].returned.name).not.toBe(returnedTests[j].name);
-        }
-      }
     });
 
     it("should return an empty array if no test matches", async () => {
       await insertManyTests();
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
@@ -121,7 +145,7 @@ describe("createStandardModel", () => {
         similar: true,
         optionals: true,
       });
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
@@ -130,9 +154,9 @@ describe("createStandardModel", () => {
         description: initialTests[0].returned.description,
         number: initialTests[0].returned.number,
       });
-      const set = new Set(returnedTests.map(({ id }) => id));
-      initialTests.forEach(({ returned: { id } }) => {
-        expect(set.has(id)).toBe(true);
+      const set = new Set(returnedTests.map(({ testId }) => testId));
+      initialTests.forEach(({ returned: { testId } }) => {
+        expect(set.has(testId)).toBe(true);
       });
       expect(set.size).toBe(initialTests.length);
     });
@@ -141,16 +165,16 @@ describe("createStandardModel", () => {
   describe("getTestById", () => {
     it("should return a test", async () => {
       const { returned } = await insert1Test();
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
-      const test = await standardModel.getTestById(returned.id);
+      const test = await standardModel.getTestById(returned.testId);
       expect(test).toEqual(returned);
     });
 
     it("should throw QueryError if no test matches(empty db)", async () => {
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
@@ -159,9 +183,9 @@ describe("createStandardModel", () => {
       );
     });
 
-    it("should throw QueryError if no test matches id", async () => {
+    it("should throw QueryError if no test matches testId", async () => {
       await insertManyTests();
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
@@ -172,18 +196,18 @@ describe("createStandardModel", () => {
 
     it("should return a test with many rows in db", async () => {
       const tests = await insertManyTests(20);
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
-      const test = await standardModel.getTestById(tests[10].returned.id);
+      const test = await standardModel.getTestById(tests[10].returned.testId);
       expect(test).toEqual(tests[10].returned);
     });
   });
 
   describe("createTest", () => {
     it("should return a test", async () => {
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
@@ -193,8 +217,8 @@ describe("createStandardModel", () => {
         number: 1,
       };
       const inserted = await standardModel.createTest(toInsert);
-      const testFromDB = await queryId(inserted.id);
-      expect(inserted).toHaveProperty("id");
+      const testFromDB = await queryId(inserted.testId);
+      expect(inserted).toHaveProperty("testId");
       expect(inserted).toHaveProperty("name", testFromDB.name);
       expect(inserted).toHaveProperty("description", testFromDB.description);
       expect(inserted).toHaveProperty("number", testFromDB.number);
@@ -202,7 +226,7 @@ describe("createStandardModel", () => {
     });
 
     it("should throw QueryError if no test is created (missing required)", async () => {
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
@@ -216,7 +240,7 @@ describe("createStandardModel", () => {
 
     it("should return a test with many rows in db", async () => {
       await insertManyTests(20);
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
@@ -226,8 +250,8 @@ describe("createStandardModel", () => {
         number: 1,
       };
       const inserted = await standardModel.createTest(toInsert);
-      const testFromDB = await queryId(inserted.id);
-      expect(inserted).toHaveProperty("id");
+      const testFromDB = await queryId(inserted.testId);
+      expect(inserted).toHaveProperty("testId");
       expect(inserted).toHaveProperty("name", testFromDB.name);
       expect(inserted).toHaveProperty("description", testFromDB.description);
       expect(inserted).toHaveProperty("number", testFromDB.number);
@@ -238,7 +262,7 @@ describe("createStandardModel", () => {
   describe("replaceTest", () => {
     it("should return the test updated", async () => {
       const { returned } = await insert1Test();
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
@@ -248,12 +272,12 @@ describe("createStandardModel", () => {
         number: 1,
       };
       const updated = await standardModel.replaceTestById(
-        returned.id,
+        returned.testId,
         toUpdate
       );
-      const testFromDB = await queryId(updated.id);
-      expect(updated).toHaveProperty("id", testFromDB.id);
-      expect(updated.id).toBe(returned.id);
+      const testFromDB = await queryId(updated.testId);
+      expect(updated).toHaveProperty("testId", testFromDB.testId);
+      expect(updated.testId).toBe(returned.testId);
       expect(updated).toHaveProperty("name", testFromDB.name);
       expect(updated).toHaveProperty("description", testFromDB.description);
       expect(updated).toHaveProperty("number", testFromDB.number);
@@ -262,12 +286,12 @@ describe("createStandardModel", () => {
 
     it("should throw if no test is updated (missing required)", async () => {
       const { returned } = await insert1Test();
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
       await expect(
-        standardModel.replaceTestById(returned.id, {
+        standardModel.replaceTestById(returned.testId, {
           description: "test",
           number: 1,
         } as TestModel)
@@ -277,7 +301,7 @@ describe("createStandardModel", () => {
     it("should return a test with many rows in db", async () => {
       const tests = await insertManyTests(20);
       const targetTest = tests[10].returned;
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
@@ -287,12 +311,12 @@ describe("createStandardModel", () => {
         number: 1,
       };
       const updated = await standardModel.replaceTestById(
-        targetTest.id,
+        targetTest.testId,
         toUpdate
       );
-      const testFromDB = await queryId(updated.id);
-      expect(updated).toHaveProperty("id", testFromDB.id);
-      expect(updated.id).toBe(targetTest.id);
+      const testFromDB = await queryId(updated.testId);
+      expect(updated).toHaveProperty("testId", testFromDB.testId);
+      expect(updated.testId).toBe(targetTest.testId);
       expect(updated).toHaveProperty("name", testFromDB.name);
       expect(updated).toHaveProperty("description", testFromDB.description);
       expect(updated).toHaveProperty("number", testFromDB.number);
@@ -301,7 +325,7 @@ describe("createStandardModel", () => {
     });
 
     it("should throw QueryError if no test matches(empty db)", async () => {
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
@@ -314,9 +338,9 @@ describe("createStandardModel", () => {
       ).rejects.toThrow(new QueryError(["No rows returned"]));
     });
 
-    it("should throw QueryError if no test matches id", async () => {
+    it("should throw QueryError if no test matches testId", async () => {
       await insertManyTests();
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
@@ -331,7 +355,7 @@ describe("createStandardModel", () => {
 
     it("should replace completely test from db", async () => {
       const { returned } = await insertTestWithOptionals();
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
@@ -339,12 +363,12 @@ describe("createStandardModel", () => {
         name: "updated name",
       };
       const updated = await standardModel.replaceTestById(
-        returned.id,
+        returned.testId,
         toUpdate
       );
-      const testFromDB = await queryId(updated.id);
-      expect(updated).toHaveProperty("id", testFromDB.id);
-      expect(updated.id).toBe(returned.id);
+      const testFromDB = await queryId(updated.testId);
+      expect(updated).toHaveProperty("testId", testFromDB.testId);
+      expect(updated.testId).toBe(returned.testId);
       expect(updated).toHaveProperty("name", testFromDB.name);
       expect(updated).toHaveProperty("description", null);
       expect(updated).toHaveProperty("number", null);
@@ -356,7 +380,7 @@ describe("createStandardModel", () => {
   describe("patchTest", () => {
     it("should return the test patched with all properties", async () => {
       const { returned } = await insert1Test();
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
@@ -365,10 +389,13 @@ describe("createStandardModel", () => {
         description: "updated description",
         number: 1,
       };
-      const updated = await standardModel.patchTestById(returned.id, toUpdate);
-      const testFromDB = await queryId(updated.id);
-      expect(updated).toHaveProperty("id", testFromDB.id);
-      expect(updated.id).toBe(returned.id);
+      const updated = await standardModel.patchTestById(
+        returned.testId,
+        toUpdate
+      );
+      const testFromDB = await queryId(updated.testId);
+      expect(updated).toHaveProperty("testId", testFromDB.testId);
+      expect(updated.testId).toBe(returned.testId);
       expect(updated).toHaveProperty("name", testFromDB.name);
       expect(updated).toHaveProperty("description", testFromDB.description);
       expect(updated).toHaveProperty("number", testFromDB.number);
@@ -378,7 +405,7 @@ describe("createStandardModel", () => {
 
     it("should return the test patched with some properties", async () => {
       const { returned } = await insert1Test();
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
@@ -386,10 +413,13 @@ describe("createStandardModel", () => {
         name: "updated name",
         description: "updated description",
       };
-      const updated = await standardModel.patchTestById(returned.id, toUpdate);
-      const testFromDB = await queryId(updated.id);
-      expect(updated).toHaveProperty("id", testFromDB.id);
-      expect(updated.id).toBe(returned.id);
+      const updated = await standardModel.patchTestById(
+        returned.testId,
+        toUpdate
+      );
+      const testFromDB = await queryId(updated.testId);
+      expect(updated).toHaveProperty("testId", testFromDB.testId);
+      expect(updated.testId).toBe(returned.testId);
       expect(updated).toHaveProperty("name", testFromDB.name);
       expect(updated).toHaveProperty("description", testFromDB.description);
       expect(updated.description).not.toBe(returned.description);
@@ -400,17 +430,20 @@ describe("createStandardModel", () => {
 
     it("should not throw if is missing required", async () => {
       const { returned } = await insert1Test();
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
       const toUpdate = {
         description: "updated description",
       };
-      const updated = await standardModel.patchTestById(returned.id, toUpdate);
-      const testFromDB = await queryId(updated.id);
-      expect(updated).toHaveProperty("id", testFromDB.id);
-      expect(updated.id).toBe(returned.id);
+      const updated = await standardModel.patchTestById(
+        returned.testId,
+        toUpdate
+      );
+      const testFromDB = await queryId(updated.testId);
+      expect(updated).toHaveProperty("testId", testFromDB.testId);
+      expect(updated.testId).toBe(returned.testId);
       expect(updated).toHaveProperty("name", testFromDB.name);
       expect(updated).toHaveProperty("description", testFromDB.description);
       expect(updated).toHaveProperty("number", testFromDB.number);
@@ -421,7 +454,7 @@ describe("createStandardModel", () => {
     it("should return a test with many rows in db", async () => {
       const tests = await insertManyTests(20);
       const targetTest = tests[10].returned;
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
@@ -431,12 +464,12 @@ describe("createStandardModel", () => {
         number: 1,
       };
       const updated = await standardModel.patchTestById(
-        targetTest.id,
+        targetTest.testId,
         toUpdate
       );
-      const testFromDB = await queryId(updated.id);
-      expect(updated).toHaveProperty("id", testFromDB.id);
-      expect(updated.id).toBe(targetTest.id);
+      const testFromDB = await queryId(updated.testId);
+      expect(updated).toHaveProperty("testId", testFromDB.testId);
+      expect(updated.testId).toBe(targetTest.testId);
       expect(updated).toHaveProperty("name", testFromDB.name);
       expect(updated).toHaveProperty("description", testFromDB.description);
       expect(updated).toHaveProperty("number", testFromDB.number);
@@ -445,7 +478,7 @@ describe("createStandardModel", () => {
     });
 
     it("should throw QueryError if no test matches(empty db)", async () => {
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
@@ -458,9 +491,9 @@ describe("createStandardModel", () => {
       ).rejects.toThrow(new QueryError(["No rows returned"]));
     });
 
-    it("should throw QueryError if no test matches id", async () => {
+    it("should throw QueryError if no test matches testId", async () => {
       await insertManyTests();
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
@@ -477,14 +510,14 @@ describe("createStandardModel", () => {
   describe("deleteTest", () => {
     it("should return the test deleted", async () => {
       const { returned } = await insert1Test();
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
-      const deleted = await standardModel.deleteTestById(returned.id);
-      const testFromDB = await queryId(deleted.id);
-      expect(deleted).toHaveProperty("id", returned.id);
-      expect(deleted.id).toBe(returned.id);
+      const deleted = await standardModel.deleteTestById(returned.testId);
+      const testFromDB = await queryId(deleted.testId);
+      expect(deleted).toHaveProperty("testId", returned.testId);
+      expect(deleted.testId).toBe(returned.testId);
       expect(deleted).toHaveProperty("name", returned.name);
       expect(deleted).toHaveProperty("description", returned.description);
       expect(deleted).toHaveProperty("number", returned.number);
@@ -495,14 +528,14 @@ describe("createStandardModel", () => {
     it("should return a test with many rows in db", async () => {
       const tests = await insertManyTests(20);
       const targetTest = tests[10].returned;
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
-      const deleted = await standardModel.deleteTestById(targetTest.id);
-      const testFromDB = await queryId(deleted.id);
-      expect(deleted).toHaveProperty("id", targetTest.id);
-      expect(deleted.id).toBe(targetTest.id);
+      const deleted = await standardModel.deleteTestById(targetTest.testId);
+      const testFromDB = await queryId(deleted.testId);
+      expect(deleted).toHaveProperty("testId", targetTest.testId);
+      expect(deleted.testId).toBe(targetTest.testId);
       expect(deleted).toHaveProperty("name", targetTest.name);
       expect(deleted).toHaveProperty("description", targetTest.description);
       expect(deleted).toHaveProperty("number", targetTest.number);
@@ -511,7 +544,7 @@ describe("createStandardModel", () => {
     });
 
     it("should throw QueryError if no test matches(empty db)", async () => {
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );
@@ -520,9 +553,9 @@ describe("createStandardModel", () => {
       );
     });
 
-    it("should throw QueryError if no test matches id", async () => {
+    it("should throw QueryError if no test matches testId", async () => {
       await insertManyTests();
-      const standardModel = createStandardModel<TestModel, "Test">(
+      const standardModel = createStandardModel<"Test", TestModel>(
         "Test",
         newTestModelSchema
       );

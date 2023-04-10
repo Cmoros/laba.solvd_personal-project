@@ -1,7 +1,11 @@
-import Model from "./Model";
+import Model, { ModelId } from "./Model";
 import { Schema, StringifiedKeys } from "./utils";
 
-export default interface Cycle extends Model {
+type CycleTableName = "Cycle";
+
+export const CYCLE_TABLE_NAME: CycleTableName = "Cycle";
+
+export default interface Cycle extends Model<CycleTableName> {
   lineId: number;
   trainId: number;
   totalFlow: number;
@@ -9,7 +13,7 @@ export default interface Cycle extends Model {
   scheduleId: number;
 }
 
-export type NewCycle = Omit<Cycle, "id">;
+export type NewCycle = Omit<Cycle, ModelId<CycleTableName>>;
 
 export type StringifiedCycle = StringifiedKeys<Cycle>;
 
@@ -23,7 +27,7 @@ export const newCycleSchema: Schema<NewCycle> = {
   scheduleId: { type: "number", required: true },
 };
 
-export const lineSchema: Schema<Cycle> = {
+export const cycleSchema: Schema<Cycle> = {
   ...newCycleSchema,
-  id: { type: "number", required: true },
+  cycleId: { type: "number", required: true },
 };

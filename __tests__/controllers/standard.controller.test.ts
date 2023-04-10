@@ -8,15 +8,22 @@ import {
   deleteAllTests,
   insert1Test,
   insertTestWithOptionals,
+  createTestDB,
+  dropTestDB,
 } from "../utilities/testDataFactory";
 import TestModel, { newTestModelSchema } from "../utilities/TestModel";
 import pool from "../../src/db/pool";
+
+beforeAll(async () => {
+  await createTestDB();
+});
 
 beforeEach(async () => {
   await deleteAllTests();
 });
 
 afterAll(async () => {
+  await dropTestDB();
   await pool.end();
 });
 
@@ -53,7 +60,7 @@ describe("createStandardController", () => {
         status: jest
           .fn((code: number) => expect(code).toBe(200))
           .mockReturnThis(),
-        json: jest.fn((data: JSONResponse<TestModel[]>) => {
+        json: jest.fn((data: JSONResponse<"Test", TestModel[]>) => {
           expect(data).toHaveProperty("success");
           expect(data.success).toBe(true);
           expect(data).toHaveProperty("data");
@@ -98,7 +105,7 @@ describe("createStandardController", () => {
         status: jest
           .fn((code: number) => expect(code).toBe(200))
           .mockReturnThis(),
-        json: jest.fn((data: JSONResponse<TestModel[]>) => {
+        json: jest.fn((data: JSONResponse<"Test", TestModel[]>) => {
           expect(data).toHaveProperty("success");
           expect(data.success).toBe(true);
           expect(data).toHaveProperty("data");
@@ -129,7 +136,6 @@ describe("createStandardController", () => {
 
     it("should respond with a 200 and a test", async () => {
       const { returned } = await insert1Test();
-
       const standardController = createStandardController(
         "Test",
         newTestModelSchema
@@ -138,7 +144,7 @@ describe("createStandardController", () => {
         status: jest
           .fn((code: number) => expect(code).toBe(200))
           .mockReturnThis(),
-        json: jest.fn((data: JSONResponse<TestModel>) => {
+        json: jest.fn((data: JSONResponse<"Test", TestModel>) => {
           expect(data).toHaveProperty("success");
           expect(data.success).toBe(true);
           expect(data).toHaveProperty("data");
@@ -147,7 +153,7 @@ describe("createStandardController", () => {
       };
       const next = jest.fn();
       await standardController.getTest(
-        { params: { id: returned.id } } as any,
+        { params: { id: returned.testId } } as any,
         res as any,
         next
       );
@@ -224,11 +230,11 @@ describe("createStandardController", () => {
         status: jest
           .fn((code: number) => expect(code).toBe(201))
           .mockReturnThis(),
-        json: jest.fn((data: JSONResponse<TestModel>) => {
+        json: jest.fn((data: JSONResponse<"Test", TestModel>) => {
           expect(data).toHaveProperty("success");
           expect(data.success).toBe(true);
           expect(data).toHaveProperty("data");
-          expect(data.data).toHaveProperty("id");
+          expect(data.data).toHaveProperty("testId");
           expect(data.data).toHaveProperty("name");
         }),
       };
@@ -278,7 +284,7 @@ describe("createStandardController", () => {
 
     it("should respond with a 200 and the updated test", async () => {
       const { returned } = await insert1Test();
-      const { id } = returned;
+      const { testId } = returned;
       const toUpdate = { name: "Updated" };
 
       const standardController = createStandardController(
@@ -289,14 +295,14 @@ describe("createStandardController", () => {
         status: jest
           .fn((code: number) => expect(code).toBe(200))
           .mockReturnThis(),
-        json: jest.fn((data: JSONResponse<TestModel>) => {
+        json: jest.fn((data: JSONResponse<"Test", TestModel>) => {
           expect(data).toHaveProperty("success");
           expect(data.success).toBe(true);
           expect(data).toHaveProperty("data");
-          expect(data.data).toHaveProperty("id");
+          expect(data.data).toHaveProperty("testId");
           expect(data.data).toHaveProperty("name");
           expect(data.data).toEqual({
-            id,
+            testId,
             description: null,
             number: null,
             ...toUpdate,
@@ -305,17 +311,19 @@ describe("createStandardController", () => {
         }),
       };
       const next = jest.fn();
+
       await standardController.putTest(
-        { params: { id }, body: toUpdate } as any,
+        { params: { id: testId }, body: toUpdate } as any,
         res as any,
         next
       );
+
       expect(next).not.toHaveBeenCalled();
       expect(res.status).toHaveBeenCalled();
       expect(res.json).toHaveBeenCalled();
     });
 
-    it("should call next with a QueryError if Test was not updated (not existing id)", async () => {
+    it("should call next with a QueryError if Test was not updated (not existing testId)", async () => {
       const standardController = createStandardController(
         "Test",
         newTestModelSchema
@@ -342,7 +350,7 @@ describe("createStandardController", () => {
 
     it("should replace the test with the new one", async () => {
       const { returned } = await insertTestWithOptionals();
-      const { id } = returned;
+      const { testId } = returned;
       const toUpdate = { name: "Updated" };
 
       const standardController = createStandardController(
@@ -353,14 +361,14 @@ describe("createStandardController", () => {
         status: jest
           .fn((code: number) => expect(code).toBe(200))
           .mockReturnThis(),
-        json: jest.fn((data: JSONResponse<TestModel>) => {
+        json: jest.fn((data: JSONResponse<"Test", TestModel>) => {
           expect(data).toHaveProperty("success");
           expect(data.success).toBe(true);
           expect(data).toHaveProperty("data");
-          expect(data.data).toHaveProperty("id");
+          expect(data.data).toHaveProperty("testId");
           expect(data.data).toHaveProperty("name");
           expect(data.data).toEqual({
-            id,
+            testId,
             description: null,
             number: null,
             ...toUpdate,
@@ -370,7 +378,7 @@ describe("createStandardController", () => {
       };
       const next = jest.fn();
       await standardController.putTest(
-        { params: { id }, body: toUpdate } as any,
+        { params: { id: testId }, body: toUpdate } as any,
         res as any,
         next
       );
@@ -392,7 +400,7 @@ describe("createStandardController", () => {
 
     it("should respond with a 200 and the patched test", async () => {
       const { returned } = await insert1Test();
-      const { id } = returned;
+      const { testId } = returned;
       const toPatch = { name: "Updated", description: "Updated description" };
 
       const standardController = createStandardController(
@@ -403,11 +411,11 @@ describe("createStandardController", () => {
         status: jest
           .fn((code: number) => expect(code).toBe(200))
           .mockReturnThis(),
-        json: jest.fn((data: JSONResponse<TestModel>) => {
+        json: jest.fn((data: JSONResponse<"Test", TestModel>) => {
           expect(data).toHaveProperty("success");
           expect(data.success).toBe(true);
           expect(data).toHaveProperty("data");
-          expect(data.data).toHaveProperty("id");
+          expect(data.data).toHaveProperty("testId");
           expect(data.data).toHaveProperty("name");
           expect(data.data).toEqual({
             ...returned,
@@ -418,7 +426,7 @@ describe("createStandardController", () => {
       };
       const next = jest.fn();
       await standardController.patchTest(
-        { params: { id }, body: toPatch } as any,
+        { params: { id: testId }, body: toPatch } as any,
         res as any,
         next
       );
@@ -427,7 +435,7 @@ describe("createStandardController", () => {
       expect(res.json).toHaveBeenCalled();
     });
 
-    it("should call next with a QueryError if Test was not patched (not existing id)", async () => {
+    it("should call next with a QueryError if Test was not patched (not existing testId)", async () => {
       const standardController = createStandardController(
         "Test",
         newTestModelSchema
@@ -454,7 +462,7 @@ describe("createStandardController", () => {
 
     it("should patch the test with the new values that were required", async () => {
       const { returned } = await insertTestWithOptionals();
-      const { id } = returned;
+      const { testId } = returned;
       const toPatch = {
         name: "updated name",
       };
@@ -468,11 +476,11 @@ describe("createStandardController", () => {
 
           .fn((code: number) => expect(code).toBe(200))
           .mockReturnThis(),
-        json: jest.fn((data: JSONResponse<TestModel>) => {
+        json: jest.fn((data: JSONResponse<"Test", TestModel>) => {
           expect(data).toHaveProperty("success");
           expect(data.success).toBe(true);
           expect(data).toHaveProperty("data");
-          expect(data.data).toHaveProperty("id");
+          expect(data.data).toHaveProperty("testId");
           expect(data.data).toHaveProperty("name");
           expect(data.data).toEqual({
             ...returned,
@@ -483,7 +491,7 @@ describe("createStandardController", () => {
       };
       const next = jest.fn();
       await standardController.patchTest(
-        { params: { id }, body: toPatch } as any,
+        { params: { id: testId }, body: toPatch } as any,
         res as any,
         next
       );
@@ -494,7 +502,7 @@ describe("createStandardController", () => {
 
     it("should patch the test with the new values that were optionals", async () => {
       const { returned } = await insertTestWithOptionals();
-      const { id } = returned;
+      const { testId } = returned;
       const toPatch = {
         description: "updated description",
         number: 999,
@@ -508,11 +516,11 @@ describe("createStandardController", () => {
         status: jest
           .fn((code: number) => expect(code).toBe(200))
           .mockReturnThis(),
-        json: jest.fn((data: JSONResponse<TestModel>) => {
+        json: jest.fn((data: JSONResponse<"Test", TestModel>) => {
           expect(data).toHaveProperty("success");
           expect(data.success).toBe(true);
           expect(data).toHaveProperty("data");
-          expect(data.data).toHaveProperty("id");
+          expect(data.data).toHaveProperty("testId");
           expect(data.data).toHaveProperty("name");
           expect(data.data).toEqual({
             ...returned,
@@ -523,7 +531,7 @@ describe("createStandardController", () => {
       };
       const next = jest.fn();
       await standardController.patchTest(
-        { params: { id }, body: toPatch } as any,
+        { params: { id: testId }, body: toPatch } as any,
         res as any,
         next
       );
@@ -545,7 +553,7 @@ describe("createStandardController", () => {
 
     it("should respond with a 204", async () => {
       const { returned } = await insert1Test();
-      const { id } = returned;
+      const { testId } = returned;
 
       const standardController = createStandardController(
         "Test",
@@ -559,7 +567,7 @@ describe("createStandardController", () => {
       };
       const next = jest.fn();
       await standardController.deleteTest(
-        { params: { id } } as any,
+        { params: { id: testId } } as any,
         res as any,
         next
       );
@@ -568,7 +576,7 @@ describe("createStandardController", () => {
       expect(res.end).toHaveBeenCalled();
     });
 
-    it("should call next with a QueryError if Test was not deleted (not existing id)", async () => {
+    it("should call next with a QueryError if Test was not deleted (not existing testId)", async () => {
       const standardController = createStandardController(
         "Test",
         newTestModelSchema

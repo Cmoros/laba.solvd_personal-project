@@ -1,6 +1,6 @@
 import Model from "./Model";
 
-type JSONResponse<T extends Model | Model[]> = {
+type JSONResponse<Z extends string, T extends Model<Z> | Model<Z>[]> = {
   success: boolean;
   data: T;
 };

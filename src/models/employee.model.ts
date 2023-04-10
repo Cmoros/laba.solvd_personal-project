@@ -2,31 +2,36 @@ import pool from "../db/pool";
 import { getCreateQuery, getSearchQuery, getUpdateQuery } from "../db/utils";
 import QueryError from "../modules/QueryError";
 import Employee, {
+  EMPLOYEE_TABLE_NAME,
+  EmployeeTableName,
   NewEmployee,
   QueryEmployee,
   newEmployeeSchema,
 } from "../types/Employee";
+import { ModelId, getModelId } from "../types/Model";
 import { getAllFields } from "../types/utils";
 
-const TABLE_NAME = "Employee";
-
 export const getAllEmployees = async (): Promise<Employee[]> => {
-  const employees = await pool.query<Employee>(`SELECT * FROM "${TABLE_NAME}"`);
+  const employees = await pool.query<Employee>(
+    `SELECT * FROM "${EMPLOYEE_TABLE_NAME}"`
+  );
   return employees.rows;
 };
 
 export const getEmployeesByQuery = async (
   query: QueryEmployee
 ): Promise<Employee[]> => {
-  const { queryString, values } = getSearchQuery(TABLE_NAME, query);
+  const { queryString, values } = getSearchQuery(EMPLOYEE_TABLE_NAME, query);
   const employees = await pool.query<Employee>(queryString, values);
   return employees.rows;
 };
 
 export const getEmployeeById = async (
-  id: Employee["id"]
+  id: Employee[ModelId<EmployeeTableName>]
 ): Promise<Employee> => {
-  const { queryString, values } = getSearchQuery(TABLE_NAME, { id });
+  const { queryString, values } = getSearchQuery(EMPLOYEE_TABLE_NAME, {
+    [getModelId(EMPLOYEE_TABLE_NAME)]: id,
+  });
   const employee = await pool.query<Employee>(queryString, values);
   if (employee.rows.length === 0) throw new QueryError(["No rows returned"]);
 
@@ -36,7 +41,10 @@ export const getEmployeeById = async (
 export const createEmployee = async (
   newEmployee: NewEmployee
 ): Promise<Employee> => {
-  const { queryString, values } = getCreateQuery(TABLE_NAME, newEmployee);
+  const { queryString, values } = getCreateQuery(
+    EMPLOYEE_TABLE_NAME,
+    newEmployee
+  );
   const employee = await pool.query<Employee>(queryString, values);
   if (employee.rows.length === 0) throw new QueryError(["No rows returned"]);
 
@@ -44,7 +52,7 @@ export const createEmployee = async (
 };
 
 export const replaceEmployeeById = async (
-  id: Employee["id"],
+  id: Employee[ModelId<EmployeeTableName>],
   updatedEmployee: NewEmployee
 ): Promise<Employee> => {
   const employeeWithAllFields = getAllFields(
@@ -52,7 +60,7 @@ export const replaceEmployeeById = async (
     newEmployeeSchema
   );
   const { queryString, values } = getUpdateQuery(
-    TABLE_NAME,
+    EMPLOYEE_TABLE_NAME,
     employeeWithAllFields,
     id
   );
@@ -62,11 +70,11 @@ export const replaceEmployeeById = async (
 };
 
 export const patchEmployeeById = async (
-  id: Employee["id"],
+  id: Employee[ModelId<EmployeeTableName>],
   updatedEmployee: Partial<NewEmployee>
 ): Promise<Employee> => {
   const { queryString, values } = getUpdateQuery(
-    TABLE_NAME,
+    EMPLOYEE_TABLE_NAME,
     updatedEmployee,
     id
   );
@@ -77,9 +85,9 @@ export const patchEmployeeById = async (
 };
 
 export const deleteEmployeeById = async (
-  id: Employee["id"]
+  id: Employee[ModelId<EmployeeTableName>]
 ): Promise<Employee> => {
-  const queryString = `DELETE FROM "${TABLE_NAME}" WHERE id = $1 RETURNING *`;
+  const queryString = `DELETE FROM "${EMPLOYEE_TABLE_NAME}" WHERE id = $1 RETURNING *`;
   const values = [id];
   const employee = await pool.query<Employee>(queryString, values);
   if (employee.rows.length === 0) throw new QueryError(["No rows returned"]);

@@ -20,9 +20,9 @@ jest.useFakeTimers().setSystemTime(new Date(2023, 1, 1));
   */
 
 const SECRET = "my-secret-key";
-// id: 1 username: admin exp: 1675220460000
+// userId: 1 username: admin exp: 1675220460000
 const TOKEN =
-  "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImV4cCI6MTY3NTIyMDQ2MDAwMH0=.rTNOQVDdSiy2cAxwHyskZAXujuKxIZWTMgFJNoOeomw=";
+  "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoiYWRtaW4iLCJleHAiOjE2NzUyMjEwMDAwMDB9.z2Gwro0COzvWNuc+3w/JuC4uecaUs5HWsG2hXmfBrao=";
 const HEADER = {
   typ: "JWT",
   alg: "HS256",
@@ -40,14 +40,13 @@ describe("generateToken()", () => {
   const toBase64 = (body: string) => Buffer.from(body).toString("base64");
 
   const payload = {
-    id: 1,
+    userId: 1,
     username: "admin",
     exp: new Date().getTime() + TIME_TO_EXPIRE,
   };
 
   it("should generate a well formatted token", () => {
     const token = generateToken(payload, SECRET);
-
     expect(token.split(".")).toHaveLength(3);
   });
 
@@ -109,11 +108,11 @@ describe("verifyToken()", () => {
 
   it("should throw if invalid payload (no id/exp/username)", () => {
     const noId =
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjgwODAzMDMzOTg4fQ==.d/oCSVWSFzUQg66UnS7D1c69jkS+bszR5znPi0+9uzo=";
+      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIiwiZXhwIjoxNjc1MjIxMDAwMDAwfQ==.K4VrkycdlX3PDcEN0YLZa9jxymzerQUWFIQTaGUW9dk=";
     const noUsername =
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwiZXhwIjoxNjgwODAzMTMxNTEzfQ==.kPTqP9Yuh+GF4WcBS8vgN3slY8iQH3ZH51x+i+1wF9k=";
+      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsImV4cCI6MTY3NTIyMTAwMDAwMH0=.2NvzLjfEjuaktYouMY9PVIYIBzMrSngGHlYe9u0phXM=";
     const noExp =
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiJ9.hSm47QWYM8IUCx2JaMTOiL4BTEHFUbGZZdWetLUy1UI=";
+      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VybmFtZSI6ImFkbWluIn0=.B3GMktQQJKSoo+MUMKH5CWzpLOIx5ThOUVLzOKqMtLE=";
     const badPayloads = [noId, noUsername, noExp];
 
     for (const badPayload of badPayloads) {
@@ -135,13 +134,13 @@ describe("verifyToken()", () => {
     jest.useFakeTimers().setSystemTime(new Date(2023, 1, 1));
     const user = verifyToken(TOKEN, SECRET);
 
-    expect(user).toEqual({ username: "admin", id: 1 });
+    expect(user).toEqual({ username: "admin", userId: 1 });
   });
 });
 
 describe("verifyToken()-generateToken()", () => {
   const payload = {
-    id: 1,
+    userId: 1,
     username: "admin",
     exp: new Date().getTime() + TIME_TO_EXPIRE,
   };
@@ -149,7 +148,10 @@ describe("verifyToken()-generateToken()", () => {
     const token = generateToken(payload, SECRET);
 
     const user = verifyToken(token, SECRET);
-    expect(user).toEqual({ username: payload.username, id: payload.id });
+    expect(user).toEqual({
+      username: payload.username,
+      userId: payload.userId,
+    });
   });
 
   test("token with random info can be generated and verified", () => {
@@ -158,7 +160,7 @@ describe("verifyToken()-generateToken()", () => {
       const newSecret = `${SECRET} ${getRandomNumber()}`;
       const newPayload = {
         username: `user number ${getRandomNumber()}`,
-        id: getRandomNumber(),
+        userId: getRandomNumber(),
       };
 
       const token = generateToken(newPayload, newSecret);
@@ -166,7 +168,7 @@ describe("verifyToken()-generateToken()", () => {
 
       expect(user).toEqual({
         username: newPayload.username,
-        id: newPayload.id,
+        userId: newPayload.userId,
       });
     }
   });

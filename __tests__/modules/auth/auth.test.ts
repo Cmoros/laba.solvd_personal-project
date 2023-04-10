@@ -136,7 +136,7 @@ describe("protect middleware", () => {
   jest.useFakeTimers().setSystemTime(new Date(2023, 1, 1));
 
   const TOKEN =
-    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MSwidXNlcm5hbWUiOiJhZG1pbiIsImV4cCI6MTY3NTIyMDQ2MDAwMH0=.rTNOQVDdSiy2cAxwHyskZAXujuKxIZWTMgFJNoOeomw=";
+    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjEsInVzZXJuYW1lIjoiYWRtaW4iLCJleHAiOjE2NzUyMjEwMDAwMDB9.z2Gwro0COzvWNuc+3w/JuC4uecaUs5HWsG2hXmfBrao=";
   const setHeader = (key: string, value: string) => {
     expect(key).toBe("WWW-Authenticate");
     expect(value).toBe(`Bearer`);
@@ -183,7 +183,7 @@ describe("protect middleware", () => {
 
   it("should respond with 401 when user in token is not found", async () => {
     const token =
-      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6MTAsInVzZXJuYW1lIjoiYWRtaW4yIiwiZXhwIjoxNjc1MjIwNDYwMDAwfQ==.pI2j8ULojwaR1aI/EMiGiRFEYaMXrM3T8sjsecnfGGg=";
+      "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ1c2VySWQiOjk5OTk5OTk5OTk5OSwidXNlcm5hbWUiOiJhZG1pbiIsImV4cCI6MTY3NTIyMTAwMDAwMH0=.+Av5eKqA1H6V+8bRpfa+P/IMlg6/LyAQp1iERTA/Bls=";
     const next = jest.fn();
     const req: any = {
       headers: { authorization: `Bearer ${token}` },
@@ -217,7 +217,7 @@ describe("protect middleware", () => {
     expect(next).toHaveBeenCalled();
     expect(req.user).toBeTruthy();
     expect(req.user.username).toBe("admin");
-    expect(req.user.id).toBe(1);
+    expect(req.user.userId).toBe(1);
     expect(req.user.password).toBeTruthy();
   });
 });

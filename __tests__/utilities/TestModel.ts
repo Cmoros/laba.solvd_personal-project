@@ -1,14 +1,17 @@
-import Model from "../../src/types/Model";
+import Model, { ModelId } from "../../src/types/Model";
 import { Schema, StringifiedKeys } from "../../src/types/utils";
 
-export default interface TestModel extends Model {
+export type TestTableName = "Test";
+
+export const TEST_TABLE_NAME: TestTableName = "Test";
+
+export default interface TestModel extends Model<TestTableName> {
   name: string;
   number?: number;
   description?: string;
 }
 
-export type NewTestModel = Omit<TestModel, "id">;
-
+export type NewTestModel = Omit<TestModel, ModelId<TestTableName>>;
 export type StringifiedTestModel = StringifiedKeys<TestModel>;
 
 export type QueryTestModel = Partial<StringifiedTestModel | TestModel>;
@@ -21,5 +24,5 @@ export const newTestModelSchema: Schema<NewTestModel> = {
 
 export const lineSchema: Schema<TestModel> = {
   ...newTestModelSchema,
-  id: { type: "number", required: true },
+  testId: { type: "number", required: true },
 };

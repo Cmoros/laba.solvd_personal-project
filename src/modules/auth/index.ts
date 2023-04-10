@@ -25,7 +25,7 @@ export const protect = async (
   try {
     const token = getTokenFromHeaders(bearer);
     const user = verifyToken(token, process.env.JWT_SECRET_KEY!);
-    const userFromDB = await getUserById(user.id);
+    const userFromDB = await getUserById(user.userId);
     if (!userFromDB || userFromDB.username !== user.username) {
       throw new AuthError(["User not found"]);
     }
@@ -82,7 +82,7 @@ export const registerHandler = async (
       password: await hashPassword(user.password),
     });
     const token = generateToken(
-      { id: newUser.id, username: newUser.username },
+      { userId: newUser.userId, username: newUser.username },
       process.env.JWT_SECRET_KEY!
     );
     res.status(201);

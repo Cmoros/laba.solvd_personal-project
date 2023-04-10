@@ -1,13 +1,20 @@
 import Model from "./Model";
 import { Schema, StringifiedKeys } from "./utils";
 
-export default interface RouteSegment extends Model {
+type RouteSegmentTableName = "RouteSegment";
+
+export const ROUTE_SEGMENT_TABLE_NAME: RouteSegmentTableName = "RouteSegment";
+
+export default interface RouteSegment extends Model<RouteSegmentTableName> {
   peopleFlow: number;
   cycleId: number;
   scheduleId: number;
 }
 
-export type NewRouteSegment = Omit<RouteSegment, "id">;
+export type NewRouteSegment = Omit<
+  RouteSegment,
+  `${Uncapitalize<RouteSegmentTableName>}Id`
+>;
 
 export type StringifiedRouteSegment = StringifiedKeys<RouteSegment>;
 
@@ -19,7 +26,7 @@ export const newRouteSegmentSchema: Schema<NewRouteSegment> = {
   scheduleId: { type: "number", required: true },
 };
 
-export const lineSchema: Schema<RouteSegment> = {
+export const routeSegmentSchema: Schema<RouteSegment> = {
   ...newRouteSegmentSchema,
-  id: { type: "number", required: true },
+  routeSegmentId: { type: "number", required: true },
 };

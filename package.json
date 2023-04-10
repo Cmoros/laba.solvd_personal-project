@@ -19,7 +19,7 @@
     "format": "prettier --write 'src/**/*.{ts}'",
     "format:check": "prettier -c 'src/**/*.{ts}'",
     "typecheck": "tsc --noEmit",
-    "test": "jest --coverage"
+    "test": "jest --coverage --runInBand"
   },
   "keywords": [],
   "author": "César Moros <rdcesar442@gmail.com>",

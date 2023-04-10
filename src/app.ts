@@ -2,7 +2,7 @@
 // https://github.com/expressjs/express/issues/4892
 import express from "express";
 import morgan from "morgan";
-import { loginHandler, registerHandler } from "./modules/auth";
+import { loginHandler, protect, registerHandler } from "./modules/auth";
 import {
   loginValidation,
   registerValidation,
@@ -24,14 +24,13 @@ app.use(express.json());
 app.post("/login", loginValidation, loginHandler);
 app.post("/register", registerValidation, registerHandler);
 
-// app.use(protect);
+// Comment out the following line to disable authentication, for manual testing purposes
+app.use(protect);
 
 app.use("/employees", employeesRouter);
-
 app.use("/lines", linesRouter);
 app.use("/trains", oldTrainsRouter);
 app.use("/stations", stationsRouter);
-
 app.use("/schedules", schedulesRouter);
 app.use("/cycles", cyclesRouter);
 

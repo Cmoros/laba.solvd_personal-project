@@ -1,20 +1,27 @@
-import Model from "./Model";
-import { Schema, OptionalKeys, RequiredKeys, StringifiedKeys } from "./utils";
+import Model, { ModelId } from "./Model";
+import { Schema, StringifiedKeys } from "./utils";
 
-export default interface Employee extends Model {
+export type EmployeeTableName = "Employee";
+
+export const EMPLOYEE_TABLE_NAME: EmployeeTableName = "Employee";
+
+export default interface Employee extends Model<EmployeeTableName> {
   name: string;
-  position?: string;
+  position?: string | null;
 }
 
-export type NewEmployee = Omit<Employee, "id">;
+export type NewEmployee = Omit<Employee, ModelId<EmployeeTableName>>;
 
 export type StringifiedEmployee = StringifiedKeys<Employee>;
 
 export type QueryEmployee = Partial<StringifiedEmployee | Employee>;
 
-export const employeeOptionalFields: OptionalKeys<Employee>[] = ["position"];
+// export const employeeOptionalFields: OptionalKeys<Employee>[] = ["position"];
 
-export const employeeRequiredFields: RequiredKeys<Employee>[] = ["id", "name"];
+// export const employeeRequiredFields: RequiredKeys<Employee>[] = [
+//   "employeeId",
+//   "name",
+// ];
 
 export const newEmployeeSchema: Schema<NewEmployee> = {
   name: { type: "string", required: true },
@@ -23,7 +30,7 @@ export const newEmployeeSchema: Schema<NewEmployee> = {
 
 export const employeeSchema: Schema<Employee> = {
   ...newEmployeeSchema,
-  id: { type: "number", required: true },
+  employeeId: { type: "number", required: true },
 };
 
 // export const checkIsNewEmployee = (toCheck: unknown): employee is NewEmployee => {

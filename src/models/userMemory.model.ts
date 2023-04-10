@@ -1,6 +1,8 @@
 import usersDB from "../db/users";
 import { User } from "../types/User";
 
+// TODO Add User Table in Postgresql and it's model
+
 export const getUserByUsername = async (
   username: User["username"]
 ): Promise<User | null> => {
@@ -13,18 +15,18 @@ export const getUserByUsername = async (
   return null;
 };
 
-export const getUserById = async (id: User["id"]): Promise<User | null> => {
+export const getUserById = async (id: User["userId"]): Promise<User | null> => {
   return usersDB[id] ?? null;
 };
 
-export const createUser = async (user: Omit<User, "id">): Promise<User> => {
+export const createUser = async (user: Omit<User, "userId">): Promise<User> => {
   const users = Object.values(usersDB);
 
   if (users.find((u) => u.username === user.username)) {
     throw new Error("Duplicated username");
   }
-  const id = users.length;
-  const newUser: User = { id, ...user };
-  usersDB[id] = newUser;
+  const userId = users.length;
+  const newUser: User = { userId, ...user };
+  usersDB[userId] = newUser;
   return newUser;
 };

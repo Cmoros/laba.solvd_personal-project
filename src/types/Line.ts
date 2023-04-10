@@ -1,11 +1,14 @@
+import Model from "./Model";
 import { Schema, StringifiedKeys } from "./utils";
 
-export default interface Line {
-  id: number;
+export type LineTableName = "Line";
+
+export const LINE_TABLE_NAME: LineTableName = "Line";
+export default interface Line extends Model<LineTableName> {
   name: string;
 }
 
-export type NewLine = Omit<Line, "id">;
+export type NewLine = Omit<Line, `${Uncapitalize<LineTableName>}Id`>;
 
 export type StringifiedLine = StringifiedKeys<Line>;
 
@@ -21,5 +24,5 @@ export const newLineSchema: Schema<NewLine> = {
 
 export const lineSchema: Schema<Line> = {
   ...newLineSchema,
-  id: { type: "number", required: true },
+  lineId: { type: "number", required: true },
 };
