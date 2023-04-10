@@ -1,7 +1,7 @@
+import Model from "./Model";
 import { Schema } from "./utils";
 
-export interface User {
-  id: number;
+export interface User extends Model {
   username: string;
   password: string;
 }

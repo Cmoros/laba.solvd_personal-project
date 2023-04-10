@@ -1,7 +1,7 @@
+import Model from "./Model";
 import { Schema, StringifiedKeys } from "./utils";
 
-export default interface Station {
-  id: number;
+export default interface Station extends Model {
   name: string;
   location: string;
   lineId: number;

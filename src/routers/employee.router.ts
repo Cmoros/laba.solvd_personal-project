@@ -16,34 +16,35 @@ import {
 } from "../middlewares/schemaValidation";
 import { respondValidationError } from "../middlewares/respondValidationError";
 import { newEmployeeSchema } from "../types/Employee";
+import createStandardRouter from "./standard.router";
 
-const employeesRouter = express.Router();
+const oldEmployeesRouter = express.Router();
 const validateFullBody = fullBodyValidation(newEmployeeSchema);
 const validatePartialBody = partialBodyValidation(newEmployeeSchema);
 const validateQueryParams = queryParamsValidation(newEmployeeSchema);
 
-employeesRouter.get(
+oldEmployeesRouter.get(
   "",
   validateQueryParams,
   respondValidationError,
   getEmployees
 );
 
-employeesRouter.get(
+oldEmployeesRouter.get(
   "/:id",
   idParamValidation,
   respondValidationError,
   getEmployee
 );
 
-employeesRouter.post(
+oldEmployeesRouter.post(
   "",
   validateFullBody,
   respondValidationError,
   postEmployee
 );
 
-employeesRouter.put(
+oldEmployeesRouter.put(
   "/:id",
   idParamValidation,
   validateFullBody,
@@ -51,7 +52,7 @@ employeesRouter.put(
   putEmployee
 );
 
-employeesRouter.patch(
+oldEmployeesRouter.patch(
   "/:id",
   idParamValidation,
   validatePartialBody,
@@ -59,11 +60,13 @@ employeesRouter.patch(
   patchEmployee
 );
 
-employeesRouter.delete(
+oldEmployeesRouter.delete(
   "/:id",
   idParamValidation,
   respondValidationError,
   deleteEmployee
 );
+
+const employeesRouter = createStandardRouter("Employee", newEmployeeSchema);
 
 export default employeesRouter;

@@ -103,7 +103,7 @@ describe("verifyToken()", () => {
     const invalidToken = "saudisahd.asdjoasdija.hello";
 
     expect(() => verifyToken(invalidToken, SECRET)).toThrow(
-      new AuthError("Not matching signatures")
+      new AuthError(["Not matching signatures"])
     );
   });
 
@@ -118,7 +118,7 @@ describe("verifyToken()", () => {
 
     for (const badPayload of badPayloads) {
       expect(() => verifyToken(badPayload, SECRET)).toThrow(
-        new AuthError("Unexpected Signature")
+        new AuthError(["Unexpected Signature"])
       );
     }
   });
@@ -127,7 +127,7 @@ describe("verifyToken()", () => {
     jest.advanceTimersByTime(TIME_TO_EXPIRE * 2);
 
     expect(() => verifyToken(TOKEN, SECRET)).toThrow(
-      new AuthError("Expired token")
+      new AuthError(["Expired token"])
     );
   });
 

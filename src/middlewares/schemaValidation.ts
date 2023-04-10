@@ -2,36 +2,72 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { body, param, query } from "express-validator";
 import { Schema } from "../types/utils";
+import { NextFunction, Request, Response } from "express";
 
 // FIXME fix this any types and the eslint-disable
 
 export const queryParamsValidation = <T extends object>(schema: Schema<T>) =>
   Object.entries(schema).map(([key, value]) => {
-    const { type } = value as any;
-    return query(key)
-      [type === "number" ? "isNumeric" : "isString"]()
-      .optional()
-      .withMessage(`${key} is missing or is not valid`);
+    const dinamicFnName = {
+      [`validateQueryParam${key[0].toUpperCase()}${key.slice(1)}`](
+        req: Request,
+        res: Response,
+        next: NextFunction
+      ) {
+        const { type } = value as any;
+        return query(key)
+          [type === "number" ? "isNumeric" : "isString"]()
+          .optional()
+          .withMessage(`${key} is missing or is not valid`)(req, res, next);
+      },
+    };
+    return dinamicFnName[
+      `validateQueryParam${key[0].toUpperCase()}${key.slice(1)}`
+    ];
   });
 
 export const fullBodyValidation = <T extends object>(schema: Schema<T>) =>
   Object.entries(schema).map(([key, value]) => {
-    const { type, required } = value as any;
-    return body(key)
-      [type === "number" ? "isNumeric" : "isString"]()
-      [required ? "exists" : "optional"]()
-      .withMessage(`${key} is missing or is not valid`);
+    const dinamicFnName = {
+      [`validateBody${key[0].toUpperCase()}${key.slice(1)}`](
+        req: Request,
+        res: Response,
+        next: NextFunction
+      ) {
+        const { type, required } = value as any;
+        return body(key)
+          [type === "number" ? "isNumeric" : "isString"]()
+          [required ? "exists" : "optional"]()
+          .withMessage(`${key} is missing or is not valid`)(req, res, next);
+      },
+    };
+    return dinamicFnName[`validateBody${key[0].toUpperCase()}${key.slice(1)}`];
   });
 
 export const partialBodyValidation = <T extends object>(schema: Schema<T>) =>
   Object.entries(schema).map(([key, value]) => {
-    const { type } = value as any;
-    return body(key)
-      [type === "number" ? "isNumeric" : "isString"]()
-      .optional()
-      .withMessage(`${key} is missing or is not valid`);
+    const dinamicFnName = {
+      [`validatePartialBody${key[0].toUpperCase()}${key.slice(1)}`](
+        req: Request,
+        res: Response,
+        next: NextFunction
+      ) {
+        const { type } = value as any;
+        return body(key)
+          [type === "number" ? "isNumeric" : "isString"]()
+          .optional()
+          .withMessage(`${key} is missing or is not valid`)(req, res, next);
+      },
+    };
+    return dinamicFnName[
+      `validatePartialBody${key[0].toUpperCase()}${key.slice(1)}`
+    ];
   });
 
-export const idParamValidation = [
-  param("id").isNumeric().withMessage("id is not valid"),
-];
+export const idParamValidation = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  return param("id").isNumeric().withMessage("id is not valid")(req, res, next);
+};

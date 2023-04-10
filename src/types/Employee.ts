@@ -1,7 +1,7 @@
+import Model from "./Model";
 import { Schema, OptionalKeys, RequiredKeys, StringifiedKeys } from "./utils";
 
-export default interface Employee {
-  id: number;
+export default interface Employee extends Model {
   name: string;
   position?: string;
 }

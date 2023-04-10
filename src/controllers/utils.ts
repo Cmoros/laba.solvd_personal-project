@@ -18,7 +18,11 @@ export const handleQueryError = (
 export const handleSuccessfulQuery = (
   res: Response,
   data: unknown,
-  code = 200
+  code = 200 // 200 = OK, 201 = Created, 204 = No Content
 ) => {
-  res.status(code).json({ success: true, data });
+  if (code === 204) {
+    res.status(204).end();
+  } else {
+    res.status(code).json({ success: true, data });
+  }
 };

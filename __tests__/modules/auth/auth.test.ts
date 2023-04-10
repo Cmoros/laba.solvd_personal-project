@@ -13,7 +13,6 @@ import {
 } from "../../../src/modules/auth";
 import { User } from "../../../src/types/User";
 import dotenv from "dotenv";
-import { generateToken } from "../../../src/modules/auth/utils";
 
 process.env.JWT_SECRET_KEY = "my-secret-key";
 

@@ -1,7 +1,7 @@
+import Model from "./Model";
 import { Schema, StringifiedKeys } from "./utils";
 
-export default interface Train {
-  id: number;
+export default interface Train extends Model {
   model: string;
   lineId: number;
   totalCars: number;

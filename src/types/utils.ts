@@ -52,4 +52,4 @@ export const getAllFields = <T extends object>(
   return allFields;
 };
 
-export type TypesFromDB = number | string | undefined;
+export type TypesFromDB = number | string | null;

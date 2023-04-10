@@ -14,6 +14,8 @@ import { EmptyObject, checkIsEmptyObject } from "../types/utils";
 import { QueryParams } from "../types/Auth";
 import { handleQueryError, handleSuccessfulQuery } from "./utils";
 
+// TODO Old Code, delete later
+
 export const getStations = async (
   req: AuthorizedRequest<EmptyObject, EmptyObject, QueryParams<Station>>,
   res: Response,

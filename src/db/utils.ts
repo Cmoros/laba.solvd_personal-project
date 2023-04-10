@@ -1,46 +1,55 @@
-import { TypesFromDB } from "../types/utils";
+import Model from "../types/Model";
+import { StringifiedKeys, TypesFromDB } from "../types/utils";
 
-type DBRow = Record<string, TypesFromDB>;
+// FIXME Remove "as" used to cast to TypesFromDB
 
-export const getUpdateQuery = <T extends DBRow>(
+export type DBRow = Record<string, TypesFromDB>;
+
+// This query search only for exact matches
+// It can be improved to handle partial matches with texts(with a little of work)
+// It could be a requirement or not in the future
+export const getSearchQuery = <
+  T extends Partial<Model> | StringifiedKeys<Partial<Model>>
+>(
   tableName: string,
-  toUpdate: T,
-  id: number
+  query: T
 ) => {
-  let queryString = `UPDATE "${tableName}" SET `;
-  const values: (string | number | null)[] = [];
-  for (const key in toUpdate) {
-    if (key.toLowerCase() === "id") continue;
-    queryString += `"${key}" = $${values.length + 1}, `;
-    values.push(toUpdate[key as keyof T] ?? null);
+  let queryString = `SELECT * FROM "${tableName}" WHERE `;
+  const values: TypesFromDB[] = [];
+  for (const key in query) {
+    queryString += `"${key}" = $${values.length + 1} AND `;
+    values.push((query[key as keyof T] as TypesFromDB) ?? null);
   }
-  queryString = queryString.slice(0, -2);
-  queryString += ` WHERE id = $${values.length + 1} RETURNING *`;
-  values.push(id);
+  queryString = queryString.slice(0, -5);
   return { queryString, values };
 };
 
-const getValuesQuery = <T extends DBRow>(toCreate: T, currentValues = 0) => {
+const getValuesQuery = <T extends Omit<Model, "id">>(
+  toCreate: T,
+  currentValues = 0
+) => {
   let valuesString = "";
-  const values: (string | number | null)[] = [];
+  const values: TypesFromDB[] = [];
   for (const key in toCreate) {
     valuesString += `$${values.length + 1 + currentValues}, `;
-    values.push(toCreate[key as keyof T] ?? null);
+    values.push((toCreate[key as keyof T] as TypesFromDB) ?? null);
   }
   valuesString = valuesString.slice(0, -2);
   return { valuesString, values };
 };
 
-export const getCreateQuery = <T extends DBRow>(
+export const getCreateQuery = <T extends Omit<Model, "id">>(
   tableName: string,
   toCreate: T
 ) => {
   let initialQueryString = `INSERT INTO "${tableName}" (`;
-  for (const key in toCreate) {
+  const copyWithoutId: T & { id?: number } = { ...toCreate, id: -1 };
+  delete copyWithoutId.id;
+  for (const key in copyWithoutId) {
     initialQueryString += `"${key}", `;
   }
   initialQueryString = initialQueryString.slice(0, -2);
-  const { valuesString, values } = getValuesQuery(toCreate);
+  const { valuesString, values } = getValuesQuery(copyWithoutId);
 
   return {
     queryString:
@@ -49,7 +58,10 @@ export const getCreateQuery = <T extends DBRow>(
   };
 };
 
-export const getCreateManyQuery = <T extends DBRow>(
+// This function requires that all objects in the array have the same fields
+// It can be improved to handle different fields or it can be a requirement for using the utility function
+// Not decided yet because it haven't been implemented in the code
+export const getCreateManyQuery = <T extends Omit<Model, "id">>(
   tableName: string,
   toCreate: T[]
 ) => {
@@ -78,16 +90,23 @@ export const getCreateManyQuery = <T extends DBRow>(
   };
 };
 
-export const getSearchQuery = <T extends DBRow>(
+export const getUpdateQuery = <
+  T extends Omit<Model, "id"> | Partial<Omit<Model, "id">>
+>(
   tableName: string,
-  query: T
+  toUpdate: T,
+  id: number | string
 ) => {
-  let queryString = `SELECT * FROM "${tableName}" WHERE `;
-  const values: (string | number | null)[] = [];
-  for (const key in query) {
-    queryString += `"${key}" = $${values.length + 1} AND `;
-    values.push(query[key as keyof T] ?? null);
+  let queryString = `UPDATE "${tableName}" SET `;
+  const values: TypesFromDB[] = [];
+  const copyWithoutId: T & { id?: number } = { ...toUpdate, id: -1 };
+  for (const key in copyWithoutId) {
+    if (key.toLowerCase() === "id") continue;
+    queryString += `"${key}" = $${values.length + 1}, `;
+    values.push((copyWithoutId[key as keyof T] as TypesFromDB) ?? null);
   }
-  queryString = queryString.slice(0, -5);
+  queryString = queryString.slice(0, -2);
+  queryString += ` WHERE "id" = $${values.length + 1} RETURNING *`;
+  values.push(id);
   return { queryString, values };
 };
