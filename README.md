@@ -820,4 +820,6 @@ Unit tests are located in the `__tests__` directory. To run the unit tests, run 
 $ npm test
 ```
 
-At the moment, tests that makes requests to the Postgres database may fail if different suites are ran simultaneously (like `standard.controller.test.ts` and `standard.model.test.ts`). This is because the tests interact with the same table and they add/update/delete rows that may compromise the other tests. By default (with `npm test`) are run with `--runInBand` flag. Also, they're ran with `--coverage` flag.
+Tests that interact with the database may fail if the database has not been created or if the .env values have not been updated with your db.
+
+By default (with `npm test`) are run with `--runInBand` flag. Also, they're ran with `--coverage` flag. At the moment, tests that makes requests to the Postgres database may fail if different suites are ran simultaneously (like `standard.controller.test.ts` and `standard.model.test.ts`). This is because the tests interact with the same table and they add/update/delete rows that may compromise the other tests.
