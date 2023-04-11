@@ -122,13 +122,15 @@ describe("createStandardRouter", () => {
       expect(route).toBeDefined();
     });
 
-    it("should have a post route", () => {
+    it("should have all it's middlewares and handlers", () => {
       const router = createStandardRouter("Test", newTestModelSchema);
       const stack = router.stack as RoutesStack;
       const route = stack.find(
         (route) => route.route.path === "" && route.route.methods.post
       )!;
-      let i = checkBodyValidation(route.route.stack);
+      let i = 0;
+      expect(route.route.stack[i++].name).toBe("validateBodyIdMissing");
+      i = checkBodyValidation(route.route.stack, i);
       expect(route.route.stack[i++].name).toBe("respondValidationError");
       expect(route.route.stack[i++].name).toBe("postTest");
       expect(route.route.stack.length).toBe(i);
@@ -145,7 +147,7 @@ describe("createStandardRouter", () => {
       expect(route).toBeDefined();
     });
 
-    it("should have a put route", () => {
+    it("should have all it's middlewares and handlers", () => {
       const router = createStandardRouter("Test", newTestModelSchema);
       const stack = router.stack as RoutesStack;
       const route = stack.find(
@@ -153,6 +155,7 @@ describe("createStandardRouter", () => {
       )!;
       let i = 0;
       expect(route.route.stack[i++].name).toBe("idParamValidation");
+      expect(route.route.stack[i++].name).toBe("validateBodyIdMissing");
       i = checkBodyValidation(route.route.stack, i);
       expect(route.route.stack[i++].name).toBe("respondValidationError");
       expect(route.route.stack[i++].name).toBe("putTest");
@@ -170,7 +173,7 @@ describe("createStandardRouter", () => {
       expect(route).toBeDefined();
     });
 
-    it("should have a patch route", () => {
+    it("should have all it's middlewares and handlers", () => {
       const router = createStandardRouter("Test", newTestModelSchema);
       const stack = router.stack as RoutesStack;
       const route = stack.find(
@@ -178,6 +181,7 @@ describe("createStandardRouter", () => {
       )!;
       let i = 0;
       expect(route.route.stack[i++].name).toBe("idParamValidation");
+      expect(route.route.stack[i++].name).toBe("validateBodyIdMissing");
       i = checkPartialBodyValidation(route.route.stack, i);
       expect(route.route.stack[i++].name).toBe("respondValidationError");
       expect(route.route.stack[i++].name).toBe("patchTest");
@@ -195,7 +199,7 @@ describe("createStandardRouter", () => {
       expect(route).toBeDefined();
     });
 
-    it("should have a delete route", () => {
+    it("should have all it's middlewares and handlers", () => {
       const router = createStandardRouter("Test", newTestModelSchema);
       const stack = router.stack as RoutesStack;
       const route = stack.find(

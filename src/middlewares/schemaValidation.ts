@@ -3,6 +3,7 @@
 import { body, param, query } from "express-validator";
 import { Schema } from "../types/utils";
 import { NextFunction, Request, Response } from "express";
+import { getModelId } from "../types/Model";
 
 // FIXME fix this any types and the eslint-disable
 
@@ -70,4 +71,18 @@ export const idParamValidation = (
   next: NextFunction
 ) => {
   return param("id").isNumeric().withMessage("id is not valid")(req, res, next);
+};
+
+export const idBodyValidation = (tableName: string) => {
+  return function validateBodyIdMissing(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const modelId = getModelId(tableName);
+    return body(modelId)
+      .not()
+      .exists()
+      .withMessage(`${modelId} should not be in body`)(req, res, next);
+  };
 };

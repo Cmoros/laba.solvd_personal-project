@@ -4,6 +4,7 @@ import createStandardController from "../controllers/standard.controller";
 import { Schema } from "../types/utils";
 import {
   fullBodyValidation,
+  idBodyValidation,
   idParamValidation,
   partialBodyValidation,
   queryParamsValidation,
@@ -24,6 +25,7 @@ const createStandardRouter = <T extends string, M extends Model<T>>(
   const validateFullBody = fullBodyValidation(newItemSchema);
   const validatePartialBody = partialBodyValidation(newItemSchema);
   const validateQueryParams = queryParamsValidation(newItemSchema);
+  const validateBodyIdMissing = idBodyValidation(tableName);
 
   router.get(
     "",
@@ -39,9 +41,9 @@ const createStandardRouter = <T extends string, M extends Model<T>>(
     standardController[`get${tableName}`]
   );
 
-  // TODO Add validation wether is array or not, for creating many(don't really know how to do it with express-validator)
   router.post(
     "",
+    validateBodyIdMissing,
     validateFullBody,
     respondValidationError,
     standardController[`post${tableName}`]
@@ -50,6 +52,7 @@ const createStandardRouter = <T extends string, M extends Model<T>>(
   router.put(
     "/:id",
     idParamValidation,
+    validateBodyIdMissing,
     validateFullBody,
     respondValidationError,
     standardController[`put${tableName}`]
@@ -58,6 +61,7 @@ const createStandardRouter = <T extends string, M extends Model<T>>(
   router.patch(
     "/:id",
     idParamValidation,
+    validateBodyIdMissing,
     validatePartialBody,
     respondValidationError,
     standardController[`patch${tableName}`]

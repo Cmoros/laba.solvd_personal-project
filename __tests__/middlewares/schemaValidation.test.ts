@@ -198,7 +198,7 @@ describe(idParamValidation.name, () => {
     ).not.toThrow();
   });
 
-  it("should always call next without ", () => {
+  it("should always call next", () => {
     const req: any = {
       params: {
         id: "test",
