@@ -31,7 +31,7 @@ app.post(
 );
 
 // Comment out the following line to disable authentication, for manual testing purposes
-// app.use(protect);
+app.use(protect);
 
 app.use("/employees", employeesRouter);
 app.use("/lines", linesRouter);
