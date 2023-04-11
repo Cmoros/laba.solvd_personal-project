@@ -97,7 +97,7 @@ describe("generateToken()", () => {
   });
 });
 
-describe("verifyToken()", () => {
+describe("verifyToken", () => {
   it("should throw if invalid signature", () => {
     const invalidToken = "saudisahd.asdjoasdija.hello";
 

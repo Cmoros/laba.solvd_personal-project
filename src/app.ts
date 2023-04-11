@@ -15,17 +15,23 @@ import stationsRouter from "./routers/station.router";
 import schedulesRouter from "./routers/schedule.router";
 import cyclesRouter from "./routers/cycle.router";
 import routeSegmentsRouter from "./routers/routeSegment.router";
+import { respondValidationError } from "./middlewares/respondValidationError";
 
 const app = express();
 
 app.use(morgan("dev"));
 app.use(express.json());
 
-app.post("/login", loginValidation, loginHandler);
-app.post("/register", registerValidation, registerHandler);
+app.post("/login", loginValidation, respondValidationError, loginHandler);
+app.post(
+  "/register",
+  registerValidation,
+  respondValidationError,
+  registerHandler
+);
 
 // Comment out the following line to disable authentication, for manual testing purposes
-app.use(protect);
+// app.use(protect);
 
 app.use("/employees", employeesRouter);
 app.use("/lines", linesRouter);

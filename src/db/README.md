@@ -112,9 +112,9 @@ Journey between two contiguous `Station`s of the same `Line` while traveling in 
 | Column Name | Data Type          | Constraints                     |
 | ----------- | ------------------ | ------------------------------- |
 | userId      | SERIAL PRIMARY KEY |                                 |
-| username    | TEXT NOT NULL      |                                 |
+| username    | TEXT NOT NULL      | UNIQUE                          |
 | password    | TEXT NOT NULL      |                                 |
-| employeeId  | INTEGER NOT NULL   | REFERENCES Employee(employeeId) |
+| employeeId  | INTEGER            | REFERENCES Employee(employeeId) |
 | email       | TEXT               |                                 |
 
 ## Relationships

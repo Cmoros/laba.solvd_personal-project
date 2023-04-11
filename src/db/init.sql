@@ -120,8 +120,9 @@ CREATE TABLE IF NOT EXISTS "User" (
 	"username" text NOT NULL,
 	"password" text NOT NULL,
 	"email" text NULL,
-	"employeeId" int4 NOT NULL,
+	"employeeId" int4 NULL,
 	CONSTRAINT "User_pkey" PRIMARY KEY ("userId"),
+  CONSTRAINT "User_username_key" UNIQUE ("username"),
 	CONSTRAINT "User_employeeId_fkey" FOREIGN KEY ("employeeId") REFERENCES "Employee"("employeeId")
 );
 

@@ -1,5 +1,8 @@
+import { hash } from "bcrypt";
 import pool from "../../src/db/pool";
+import { User } from "../../src/types/User";
 import TestModel from "./TestModel";
+import { SALT } from "../../src/modules/auth/utils";
 
 export const createTestDB = async (number = 0) => {
   const tableNumber = number === 0 ? "" : number;
@@ -122,3 +125,22 @@ export const testQueriesWithTableId = (tableNumber: number) => ({
   deleteAllTests: () => deleteAllTests(`${tableNumber}`),
   queryId: (id: number) => queryId(id, `${tableNumber}`),
 });
+
+export const createTestUser = async () => {
+  const random = Math.floor(Math.random() * 100000);
+  const notHashedPassword = `test ${random}`;
+  const inserted = {
+    username: `test ${random}`,
+    password: await hash(notHashedPassword, SALT),
+  };
+  const returnedRows = await pool.query<User>(
+    `INSERT INTO "User" ("username", "password") VALUES ($1, $2) RETURNING *`,
+    [inserted.username, inserted.password]
+  );
+  const returned = returnedRows.rows[0];
+  return { inserted, returned, notHashedPassword };
+};
+
+export const deleteTestUsers = async () => {
+  await pool.query(`DELETE FROM "User" WHERE "username" LIKE 'test%'`);
+};

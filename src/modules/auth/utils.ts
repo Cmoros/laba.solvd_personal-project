@@ -1,13 +1,13 @@
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 import { User, checkIsUserId, checkIsUserUsername } from "../../types/User";
-import { getUserByUsername } from "../../models/userMemory.model";
+import { getUserByUsername } from "../../models/user.model";
 import AuthError from "./AuthError";
 import { JWTData, checkIsJWTPayload } from "../../types/JWTData";
 
 export const TIME_TO_EXPIRE = 1000 * 60 * 10; //ms
 
-const SALT = 10;
+export const SALT = 10;
 
 export const getTokenFromHeaders = (bearer: string | undefined) => {
   if (!bearer) {
@@ -85,8 +85,7 @@ export const verifyToken = (token: string, secret: string): JWTData<User> => {
   const { username, userId, exp } = payload;
   if (!checkIsUserUsername(username) || !checkIsUserId(userId))
     throw new AuthError(["Unexpected Signature"]);
-  const expDate = new Date(exp);
-  if (new Date() > expDate) throw new AuthError(["Expired token"]);
+  if (new Date().getTime() > exp) throw new AuthError(["Expired token"]);
   return { username, userId };
 };
 

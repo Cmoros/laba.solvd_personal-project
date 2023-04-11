@@ -5,7 +5,7 @@ import {
   checkIsUserPassword,
   checkIsUserUsername,
 } from "../../types/User";
-import { createUser, getUserById } from "../../models/userMemory.model";
+import { createUser, getUserById } from "../../models/user.model";
 import AuthError from "./AuthError";
 import {
   getTokenFromHeaders,
@@ -25,7 +25,9 @@ export const protect = async (
   try {
     const token = getTokenFromHeaders(bearer);
     const user = verifyToken(token, process.env.JWT_SECRET_KEY!);
-    const userFromDB = await getUserById(user.userId);
+    const userFromDB = await getUserById(user.userId).catch(() => {
+      throw new AuthError(["User not found"]);
+    });
     if (!userFromDB || userFromDB.username !== user.username) {
       throw new AuthError(["User not found"]);
     }
@@ -36,10 +38,10 @@ export const protect = async (
     res.status(401);
     res.setHeader("WWW-Authenticate", "Bearer");
     if (!(e instanceof AuthError)) {
-      res.json({ success: false, error: "not authorized" });
+      res.json({ success: false, errors: ["not authorized"] });
       return;
     }
-    res.json({ success: false, error: `not authorized: ${e.message}` });
+    res.json({ success: false, errors: [`not authorized: ${e.message}`] });
   }
 };
 
@@ -58,10 +60,10 @@ export const loginHandler = async (
   } catch (e: unknown) {
     res.status(401);
     if (!(e instanceof AuthError)) {
-      res.json({ success: false, error: "not authorized" });
+      res.json({ success: false, errors: ["not authorized"] });
       return;
     }
-    res.json({ success: false, error: `not authorized: ${e.message}` });
+    res.json({ success: false, errors: [`not authorized: ${e.message}`] });
   }
 };
 
@@ -89,6 +91,9 @@ export const registerHandler = async (
     res.json({ success: true, data: { token } });
   } catch (e: unknown) {
     res.status(400);
-    res.json({ success: false, error: "Invalid user, not able to register" });
+    res.json({
+      success: false,
+      errors: ["Invalid user, not able to register"],
+    });
   }
 };

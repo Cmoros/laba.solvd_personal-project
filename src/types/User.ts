@@ -1,14 +1,14 @@
 import Model from "./Model";
 import { Schema } from "./utils";
 
-type UserTableName = "User";
+export type UserTableName = "User";
 
 export const USER_TABLE_NAME: UserTableName = "User";
 
 export interface User extends Model<UserTableName> {
   username: string;
   password: string;
-  employeeId: number;
+  employeeId?: number | null;
   email?: string | null;
 }
 
@@ -33,7 +33,7 @@ export const checkIsUserId = (toCheck: unknown): toCheck is User["userId"] => {
 export const newUserSchema: Schema<NewUser> = {
   username: { type: "string", required: true },
   password: { type: "string", required: true },
-  employeeId: { type: "number", required: true },
+  employeeId: { type: "number", required: false },
   email: { type: "string", required: false },
 };
 
