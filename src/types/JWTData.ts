@@ -1,8 +1,8 @@
 export type JWTPayload<T> = T & { exp: number };
 
-export type JWTData<T extends { id: unknown; username: unknown }> = Pick<
+export type JWTData<T extends { userId: unknown; username: unknown }> = Pick<
   T,
-  "id" | "username"
+  "userId" | "username"
 >;
 
 export const checkIsJWTPayload = <T>(

@@ -4,5 +4,5 @@ import dotenv from "dotenv";
 dotenv.config();
 
 console.log(
-  generateToken({ id: 10, username: "admin2" }, process.env.JWT_SECRET_KEY!)
+  generateToken({ userId: 1, username: "admin" }, process.env.JWT_SECRET_KEY!)
 );

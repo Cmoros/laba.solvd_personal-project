@@ -1,3 +1,6 @@
+import { Response } from "express";
+import ServerError from "../ServerError";
+
 export type AuthErrorMessage =
   | "No token found"
   | "Invalid token"
@@ -8,10 +11,17 @@ export type AuthErrorMessage =
   | "Expired token"
   | "Not matching signatures";
 
-export default class AuthError extends Error {
-  message: AuthErrorMessage;
-  constructor(message: AuthErrorMessage) {
-    super(message);
-    this.message = message;
+export default class AuthError extends ServerError {
+  constructor(public msg: [AuthErrorMessage, ...string[]]) {
+    super(msg);
+  }
+
+  respond(res: Response): void {
+    res
+      .status(401)
+      .json({
+        success: false,
+        errors: ["not authorized: " + this.msg[0], ...this.msg.slice(1)],
+      });
   }
 }
